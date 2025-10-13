@@ -47,9 +47,22 @@ class IfElseNode extends Node
         array $elseChildren = [],
         $condition = null,
     ) {
-        parent::__construct($children);
-        $this->else(...$elseChildren);
+        parent::__construct([]);
         $this->pushCondition($condition);
+        
+        // Add initial children to the first condition block
+        foreach ($children as $child) {
+            if (! isset($this->children[$this->conditionIdx])) {
+                $this->children[$this->conditionIdx] = [];
+            }
+            $this->children[$this->conditionIdx][] = $child;
+            
+            if ($child instanceof Node) {
+                $child->setParent($this);
+            }
+        }
+        
+        $this->else(...$elseChildren);
     }
 
     /**
@@ -146,7 +159,7 @@ class IfElseNode extends Node
     {
         for ($i = 0; $i <= $this->conditionIdx; $i++) {
             if ($this->tryEvalClosure($this->conditions[$i])) {
-                return (string) (new SlotNode([$this->children[$i]]));
+                return (string) (new SlotNode($this->children[$i] ?? []));
             }
         }
 
