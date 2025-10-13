@@ -2,7 +2,7 @@
     "name": "icetea/icedom",
     "description": "PHP pure and simple VDOM",
     "keywords": [
-        "Icetea",
+        "IceTea",
         "icedom"
     ],
     "homepage": "https://github.com/icetea/icedom",
@@ -24,19 +24,19 @@
     },
     "autoload": {
         "psr-4": {
-            "Icetea\\IceDOM\\": "src"
+            "IceTea\\IceDOM\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Icetea\\IceDOM\\Tests\\": "tests"
+            "IceTea\\IceDOM\\Tests\\": "tests"
         }
     },
     "scripts": {
         "test": "XDEBUG_MODE=coverage vendor/bin/pest",
         "test-coverage": "XDEBUG_MODE=coverage vendor/bin/pest --coverage",
         "format": "vendor/bin/pint",
-        "gen-tags": "./bin/vdom_tags 'Icetea\\IceDOM\\HtmlNode' > ./src/generated_html_tags.php"
+        "gen-tags": "./bin/vdom_tags 'IceTea\\IceDOM\\HtmlNode' > ./src/generated_html_tags.php"
     },
     "config": {
         "sort-packages": true,

@@ -25,8 +25,8 @@ composer require icetea/icedom
 ## Usage
 
 ```php
-$skeleton = new Icetea\IceDOM();
-echo $skeleton->echoPhrase('Hello, Icetea!');
+$skeleton = new IceTea\IceDOM();
+echo $skeleton->echoPhrase('Hello, IceTea!');
 ```
 
 ## Testing

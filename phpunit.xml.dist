@@ -16,7 +16,7 @@
     backupStaticProperties="false"
 >
     <testsuites>
-        <testsuite name="Icetea Test Suite">
+        <testsuite name="IceTea Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>

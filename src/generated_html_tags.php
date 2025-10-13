@@ -3,7 +3,7 @@
 
 
 
-use Icetea\IceDOM\HtmlNode;
+use IceTea\IceDOM\HtmlNode;
 use IceTea\IceDOM\Node;
 use IceTea\IceDOM\HtmlDocument;
 use IceTea\IceDOM\RawNode;
@@ -34,9 +34,9 @@ function _echo(...$children): EchoNode
 {
     return new EchoNode($children);
 }
-function _h($tagName, $arg = null): Icetea\IceDOM\HtmlNode
+function _h($tagName, $arg = null): IceTea\IceDOM\HtmlNode
 {
-    return Icetea\IceDOM\HtmlNode::tag($tagName, $arg, []);
+    return IceTea\IceDOM\HtmlNode::tag($tagName, $arg, []);
 }
 function clsf($format, string|null ...$args) {
     $params = array_map(function ($arg) {
