@@ -1,0 +1,247 @@
+#!/usr/bin/env php
+<?php
+
+// Common Tags
+
+require_once __DIR__.'/../src/Node.php';
+require_once __DIR__.'/../src/HtmlNode.php';
+
+use IceTea\IceDOM\HtmlNode;
+
+$htmlTags = [
+    // HTML
+    'a',
+    'abbr',
+    'address',
+    'area',
+    'article',
+    'aside',
+    'audio',
+    'b',
+    'base',
+    'bdi',
+    'bdo',
+    'blockquote',
+    'body',
+    'br',
+    'button',
+    'canvas',
+    'caption',
+    'cite',
+    'code',
+    'col',
+    'colgroup',
+    'data',
+    'datalist',
+    'del',
+    'details',
+    'dfn',
+    'dialog',
+    'div',
+    'dl',
+    'dd',
+    'dt',
+    'em',
+    'embed',
+    'fieldset',
+    'figcaption',
+    'figure',
+    'footer',
+    'form',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'head',
+    'header',
+    'hgroup',
+    'hr',
+    'html:HtmlDocument',
+    'i',
+    'iframe',
+    'img',
+    'input',
+    'ins',
+    'kbd',
+    'label',
+    'legend',
+    'li',
+    'link',
+    'main',
+    'map',
+    'mark',
+    'meta',
+    'meter',
+    'nav',
+    'noscript',
+    'object',
+    'ol',
+    'optgroup',
+    'option',
+    'output',
+    'p',
+    'param',
+    'picture',
+    'pre',
+    'progress',
+    'q',
+    'rp',
+    'rt',
+    'ruby',
+    's',
+    'samp',
+    'script',
+    'section',
+    'select',
+    'small',
+    'source',
+    'span',
+    'strong',
+    'style',
+    'sub',
+    'summary',
+    'sup',
+    'table',
+    'tbody',
+    'td',
+    'template',
+    'textarea',
+    'tfoot',
+    'th',
+    'thead',
+    'time',
+    'title',
+    'tr',
+    'track',
+    'u',
+    'ul',
+    'var',
+    'video',
+    'wbr',
+    // SVG
+    'svg',
+    'circle',
+    'ellipse',
+    'line',
+    'polygon',
+    'polyline',
+    'rect',
+    'path',
+    'text',
+    'tspan',
+    'textPath',
+    'g',
+    'defs',
+    'use',
+    'symbol',
+    'image',
+    'marker',
+    'pattern',
+    'clipPath',
+    'mask',
+    'linearGradient',
+    'radialGradient',
+    'stop',
+    'filter',
+    'feBlend',
+    'feColorMatrix',
+    'feComponentTransfer',
+    'feComposite',
+    'feConvolveMatrix',
+    'feDiffuseLighting',
+    'feDisplacementMap',
+    'feDistantLight',
+    'feDropShadow',
+    'feFlood',
+    'feFuncA',
+    'feFuncB',
+    'feFuncG',
+    'feFuncR',
+    'feGaussianBlur',
+    'feImage',
+    'feMerge',
+    'feMergeNode',
+    'feMorphology',
+    'feOffset',
+    'fePointLight',
+    'feSpecularLighting',
+    'feSpotLight',
+    'feTile',
+    'feTurbulence',
+    'animate',
+    'animateMotion',
+    'animateTransform',
+    'mpath',
+    'set',
+    'foreignObject',
+];
+
+$defaultNodeType = $argv[1] ?? 'IceTea\\VDom\\HtmlNode';
+$defaultNodeClass = basename(str_replace('\\', '/', $defaultNodeType));
+$namespace = $argv[2] ?? '';
+$namespace = $namespace == '1' ? substr($defaultNodeType, 0, strrpos($defaultNodeType, '\\')) : $namespace;
+$namespaceStr = $namespace ? "namespace {$namespace};" : '';
+$useClosure = $namespace ? 'use Closure;' : '';
+$head = <<<EOT
+<?php
+
+{$namespaceStr}
+
+{$useClosure}
+use $defaultNodeType;
+use IceTea\IceDOM\Node;
+use IceTea\IceDOM\HtmlDocument;
+use IceTea\IceDOM\RawNode;
+use IceTea\IceDOM\SafeString;
+use IceTea\IceDOM\SlotNode;
+use IceTea\IceDOM\IfElseNode;
+use IceTea\IceDOM\EchoNode;
+
+// Primitive Nodes
+
+function _raw(...\$children) : RawNode
+{
+    return new RawNode(\$children);
+}
+function _safe(\$string) : SafeString
+{
+    return new SafeString(\$string);
+}
+function _slot(\$slotFunction = null) : SlotNode
+{
+    return new SlotNode([], \$slotFunction);
+}
+function _if(\$condition) : IfElseNode
+{
+    return new IfElseNode([], [], \$condition);
+}
+function _echo(...\$children): EchoNode
+{
+    return new EchoNode(\$children);
+}
+function _h(\$tagName, \$arg = null): {$defaultNodeType}
+{
+    return {$defaultNodeType}::tag(\$tagName, \$arg, []);
+}
+function clsf(\$format, string|null ...\$args) {
+    \$params = array_map(function (\$arg) {
+        return is_null(\$arg) ? '' : \$arg;
+    }, \$args);
+    if (count(array_filter(\$params)) === 0) return '';
+    return sprintf(\$format, ...\$params);
+}
+
+// HTML Tag Nodes
+
+EOT;
+
+echo $head;
+foreach ($htmlTags as $tag) {
+    [$tagName, $nodeType] = explode(':', $tag.':'.$defaultNodeClass);
+    echo "\n";
+    echo sprintf(<<<'EOT'
+    function _%s(null | string | array | Closure | Node | SafeString $arg = null, ?array $children = null) : %s { return %s::tag('%s', $arg, $children, %s); }
+    EOT, $tagName, $nodeType, $nodeType, $tagName, in_array($tagName, HtmlNode::VOID_TAGS) ? 'true' : 'false');
+}

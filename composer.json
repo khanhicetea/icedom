@@ -1,0 +1,50 @@
+{
+    "name": "icetea/icedom",
+    "description": "PHP pure and simple VDOM",
+    "keywords": [
+        "Icetea",
+        "icedom"
+    ],
+    "homepage": "https://github.com/icetea/icedom",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "KhanhIceTea",
+            "email": "khanhicetea@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.3"
+    },
+    "require-dev": {
+        "pestphp/pest": "^4.0",
+        "laravel/pint": "^1.0",
+        "spatie/ray": "^1.28"
+    },
+    "autoload": {
+        "psr-4": {
+            "Icetea\\IceDOM\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Icetea\\IceDOM\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "XDEBUG_MODE=coverage vendor/bin/pest",
+        "test-coverage": "XDEBUG_MODE=coverage vendor/bin/pest --coverage",
+        "format": "vendor/bin/pint",
+        "gen-tags": "./bin/vdom_tags 'Icetea\\IceDOM\\HtmlNode' > ./src/generated_html_tags.php"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
