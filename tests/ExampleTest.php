@@ -6,10 +6,6 @@ it('can test', function () {
 
 it('html_doc', function () {
     expect(
-        (string) _html([
-            _body([
-                _h1(['Iceeeee Teaaaaa']),
-            ]),
-        ])
-    )->toBeString("<!DOCTYPE html>\n<html><body><h1>Iceeeee Teaaaaa</h1></body></html>");
+        (string) _html()
+    )->toEqual("<!DOCTYPE html>\n<html></html>");
 });
