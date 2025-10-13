@@ -6,11 +6,13 @@ IceDOM is a pure PHP library for building HTML documents using a Virtual DOM-lik
 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
+- [Quick Patterns Reference](#quick-patterns-reference)
 - [Core Concepts](#core-concepts)
 - [HTML Tag Helper Functions](#html-tag-helper-functions)
 - [Core Classes](#core-classes)
 - [Advanced Features](#advanced-features)
 - [Examples](#examples)
+- [Best Practices](#best-practices)
 
 ## Installation
 
@@ -38,6 +40,54 @@ $card = _div(['class' => 'card'], [
 echo $card; // Outputs HTML
 ```
 
+## Quick Patterns Reference
+
+### Basic Patterns
+
+```php
+// Empty element
+_div();
+
+// With children (list array)
+_div(['Hello World']);
+
+// With attributes and children
+_div(['class' => 'box'], ['Hello']);
+
+// Invoke syntax (recommended)
+_div('class="box"')('Hello');
+
+// Multiple children with invoke
+_ul('class="menu"')(
+    _li(['Item 1']),
+    _li(['Item 2'])
+);
+```
+
+### Dynamic Lists with map()
+
+```php
+// Map over array
+$list = _ul()->map($items, fn($item) => _li([$item]));
+
+// Table with dynamic rows
+$table = _table()(
+    _thead()(_tr()(_th(['Name']), _th(['Age']))),
+    _tbody()->map($users, fn($u) => _tr()(_td([$u->name]), _td([$u->age])))
+);
+```
+
+### Conditional Rendering
+
+```php
+_if($condition)
+    ('Show this')
+->elseIf($other)
+    ('Or this')
+->else()
+    ('Otherwise this');
+```
+
 ## Core Concepts
 
 ### 1. Everything is a Node
@@ -47,7 +97,7 @@ All HTML elements extend from the `Node` class, which provides common functional
 - String conversion with HTML escaping
 - Fluent method chaining
 
-### 2. Three Ways to Add Content
+### 2. Multiple Ways to Add Content
 
 IceDOM supports multiple syntaxes for flexibility:
 
@@ -65,12 +115,28 @@ _div(['class' => 'box'], ['Hello World']);
 // <div class="box">Hello World</div>
 ```
 
-#### C. Using Shorthand + Invoke (most concise)
+#### C. Using Invoke Syntax (recommended - most concise)
 
 ```php
+// With shorthand attributes
 _div('class="box" id="main"')('Hello World');
 // <div class="box" id="main">Hello World</div>
+
+// With multiple children
+_ul('class="menu"')(
+    _li(['Home']),
+    _li(['About']),
+    _li(['Contact'])
+);
+
+// Chain multiple invokes
+_div('class="container"')(
+    _h1(['Title']),
+    _p(['Content'])
+)('More content');
 ```
+
+**Note:** When using arrays as the first argument, IceDOM automatically detects if it's attributes (associative) or children (list).
 
 ### 3. Automatic HTML Escaping
 
@@ -197,35 +263,54 @@ _form(['action' => '/login', 'method' => 'post'], [
 #### Lists
 
 ```php
+// Using invoke syntax
+_ul('class="menu"')(
+    _li(['Home']),
+    _li(['About']),
+    _li(['Contact'])
+);
+
+_ol('class="steps"')(
+    _li(['First step']),
+    _li(['Second step'])
+);
+
+// Using array syntax
 _ul(['class' => 'menu'], [
     _li(['Home']),
     _li(['About']),
     _li(['Contact']),
-]);
-
-_ol(['class' => 'steps'], [
-    _li(['First step']),
-    _li(['Second step']),
 ]);
 ```
 
 #### Tables
 
 ```php
-_table(['class' => 'data-table'], [
-    _thead(null, [
-        _tr(null, [
+// Using invoke syntax (recommended)
+_table('class="data-table"')(
+    _thead()(
+        _tr()(
             _th(['Name']),
-            _th(['Age']),
-        ]),
-    ]),
-    _tbody(null, [
-        _tr(null, [
+            _th(['Age'])
+        )
+    ),
+    _tbody()(
+        _tr()(
             _td(['John']),
-            _td(['30']),
-        ]),
-    ]),
-]);
+            _td(['30'])
+        )
+    )
+);
+
+// With dynamic data using map()
+_table('class="data-table"')(
+    _thead()(
+        _tr()(_th(['Name']), _th(['Age']))
+    ),
+    _tbody()->map($users, fn($user) =>
+        _tr()(_td([$user->name]), _td([$user->age]))
+    )
+);
 ```
 
 #### Semantic HTML
@@ -291,12 +376,57 @@ echo $node; // Hello World
 **Key Methods:**
 
 - `appendChild($child)` - Add a child node
+- `__invoke(...$children)` - Add children using function call syntax
 - `getChildren()` - Get all children
 - `clearChildren()` - Remove all children
 - `setParent($parent)` - Set parent node
 - `getParent()` - Get parent node
 - `use(Closure $hook)` - Apply a function to modify the node
-- `map($iterable, $mapFunction = null)` - Create an ArrayMap
+- `map($iterable, $mapFunction = null)` - Create an ArrayMap for the node
+
+**Using `__invoke()` to Add Children:**
+
+```php
+// Single child
+$div = _div('class="box"')('Hello');
+
+// Multiple children
+$div = _div('class="box"')(
+    'Hello',
+    ' ',
+    'World'
+);
+
+// Chain multiple invocations
+$div = _div()('First')('Second')('Third');
+
+// Mix with other methods
+$div = _div()
+    ->id('container')
+    ('Child 1', 'Child 2')
+    ->classes('active');
+```
+
+**Using `map()` Directly on Nodes:**
+
+```php
+// Create a list from array
+$ul = _ul()->map(['Item 1', 'Item 2', 'Item 3'], 
+    fn($item) => _li([$item])
+);
+
+// Table body with dynamic rows
+$tbody = _tbody()->map($users, 
+    fn($user) => _tr()(
+        _td([$user->name]),
+        _td([$user->email])
+    )
+);
+
+// Without mapping function (direct output)
+$div = _div()->map(['A', 'B', 'C']);
+// Output: <div>A B C</div>
+```
 
 ### HtmlNode
 
@@ -591,27 +721,31 @@ $mixed = _echo(
 
 ### ArrayMap
 
-Maps an iterable to HTML nodes.
+Maps an iterable to HTML nodes. You can use it directly or via the `map()` method on nodes.
+
+**Using `map()` on Nodes (Recommended):**
+
+```php
+$users = ['Alice', 'Bob', 'Charlie'];
+
+// Map directly on the parent element
+$ul = _ul()->map($users, fn($name) => _li([$name]));
+// <ul><li>Alice</li><li>Bob</li><li>Charlie</li></ul>
+
+// Combine with attributes
+$ul = _ul('class="user-list"')->map($users, fn($name) => _li([$name]));
+```
+
+**Using ArrayMap Class Directly:**
 
 ```php
 use IceTea\IceDOM\ArrayMap;
-
-$users = ['Alice', 'Bob', 'Charlie'];
 
 $list = new ArrayMap($users, function($name) {
     return _li([$name]);
 });
 
-$ul = _ul(null, [$list]);
-// <ul><li>Alice</li><li>Bob</li><li>Charlie</li></ul>
-```
-
-**Using Node::map():**
-
-```php
-$ul = _ul(null, [
-    (new Node)->map($users, fn($name) => _li([$name]))
-]);
+$ul = _ul()([$list]);
 ```
 
 **With Associative Arrays:**
@@ -619,22 +753,34 @@ $ul = _ul(null, [
 ```php
 $data = ['name' => 'John', 'age' => 30, 'city' => 'NYC'];
 
-$dl = _dl(null, [
-    (new Node)->map($data, function($value, $key) {
-        return [
-            _dt([ucfirst($key)]),
-            _dd([$value]),
-        ];
-    })
-]);
+$dl = _dl()->map($data, function($value, $key) {
+    return [
+        _dt([ucfirst($key)]),
+        _dd([$value]),
+    ];
+});
+```
+
+**Complex Mapping with Index:**
+
+```php
+$items = ['Apple', 'Banana', 'Cherry'];
+
+$ol = _ol()->map($items, function($fruit, $index) {
+    return _li()(
+        _strong([($index + 1) . '. ']),
+        $fruit
+    );
+});
+// <ol><li><strong>1. </strong>Apple</li><li><strong>2. </strong>Banana</li>...</ol>
 ```
 
 **Without Mapping Function:**
 
 ```php
 // Direct rendering
-$list = new ArrayMap(['Item 1', 'Item 2', 'Item 3']);
-echo $list; // Item 1 Item 2 Item 3
+$div = _div()->map(['Item 1', 'Item 2', 'Item 3']);
+echo $div; // <div>Item 1 Item 2 Item 3</div>
 ```
 
 ## Advanced Features
@@ -736,34 +882,34 @@ _div('data-custom="value"');
 ### Complete Page
 
 ```php
-$page = _html(['lang' => 'en'], [
-    _head(null, [
+$page = _html('lang="en"')(
+    _head()(
         _meta(['charset' => 'UTF-8']),
         _meta(['name' => 'viewport', 'content' => 'width=device-width, initial-scale=1.0']),
         _title(['My Website']),
-        _link(['rel' => 'stylesheet', 'href' => '/css/style.css']),
-    ]),
-    _body(null, [
-        _header(['class' => 'site-header'], [
-            _nav(['class' => 'navbar'], [
-                _a(['href' => '/', 'class' => 'logo'], ['MySite']),
-                _ul(['class' => 'nav-menu'], [
-                    _li(null, [_a(['href' => '/'], ['Home'])]),
-                    _li(null, [_a(['href' => '/about'], ['About'])]),
-                    _li(null, [_a(['href' => '/contact'], ['Contact'])]),
-                ]),
-            ]),
-        ]),
-        _main(['class' => 'content'], [
+        _link(['rel' => 'stylesheet', 'href' => '/css/style.css'])
+    ),
+    _body()(
+        _header('class="site-header"')(
+            _nav('class="navbar"')(
+                _a('href="/" class="logo"')(['MySite']),
+                _ul('class="nav-menu"')(
+                    _li()(_a(['href' => '/'], ['Home'])),
+                    _li()(_a(['href' => '/about'], ['About'])),
+                    _li()(_a(['href' => '/contact'], ['Contact']))
+                )
+            )
+        ),
+        _main('class="content"')(
             _h1(['Welcome to My Website']),
-            _p(['This is a demo page built with IceDOM.']),
-        ]),
-        _footer(['class' => 'site-footer'], [
-            _p(['© 2024 MySite. All rights reserved.']),
-        ]),
-        _script(['src' => '/js/app.js']),
-    ]),
-]);
+            _p(['This is a demo page built with IceDOM.'])
+        ),
+        _footer('class="site-footer"')(
+            _p(['© 2024 MySite. All rights reserved.'])
+        ),
+        _script(['src' => '/js/app.js'])
+    )
+);
 
 echo $page;
 ```
@@ -773,14 +919,13 @@ echo $page;
 ```php
 $items = ['Apple', 'Banana', 'Cherry', 'Date'];
 
-$list = _ul(['class' => 'fruit-list'], [
-    (new Node)->map($items, function($fruit, $index) {
-        return _li(['class' => 'fruit-item'], [
-            _strong([($index + 1) . '. ']),
-            _span([$fruit]),
-        ]);
-    })
-]);
+// Using map() directly on the node (recommended)
+$list = _ul('class="fruit-list"')->map($items, function($fruit, $index) {
+    return _li('class="fruit-item"')(
+        _strong([($index + 1) . '. ']),
+        _span([$fruit])
+    );
+});
 ```
 
 ### Card Grid
@@ -792,18 +937,16 @@ $products = [
     ['name' => 'Product 3', 'price' => '$199', 'image' => 'p3.jpg'],
 ];
 
-$grid = _div(['class' => 'product-grid'], [
-    (new Node)->map($products, function($product) {
-        return _div(['class' => 'card'], [
-            _img(['src' => "/images/{$product['image']}", 'alt' => $product['name']]),
-            _div(['class' => 'card-body'], [
-                _h3(['class' => 'card-title'], [$product['name']]),
-                _p(['class' => 'card-price'], [$product['price']]),
-                _button(['class' => 'btn-primary'], ['Add to Cart']),
-            ]),
-        ]);
-    })
-]);
+$grid = _div('class="product-grid"')->map($products, function($product) {
+    return _div('class="card"')(
+        _img(['src' => "/images/{$product['image']}", 'alt' => $product['name']]),
+        _div('class="card-body"')(
+            _h3('class="card-title"')([$product['name']]),
+            _p('class="card-price"')([$product['price']]),
+            _button('class="btn-primary"')(['Add to Cart'])
+        )
+    );
+});
 ```
 
 ### Form with Validation
@@ -811,8 +954,8 @@ $grid = _div(['class' => 'product-grid'], [
 ```php
 $errors = ['email' => 'Invalid email address'];
 
-$form = _form(['action' => '/register', 'method' => 'post'], [
-    _div(['class' => 'form-group'], [
+$form = _form('action="/register" method="post"')(
+    _div('class="form-group"')(
         _label(['for' => 'email'], ['Email Address']),
         _input([
             'type' => 'email',
@@ -821,41 +964,41 @@ $form = _form(['action' => '/register', 'method' => 'post'], [
             'class' => isset($errors['email']) ? 'input-error' : ''
         ]),
         _if(isset($errors['email']))
-            (_span(['class' => 'error-message'], [$errors['email']]))
+            (_span('class="error-message"')([$errors['email']]))
         ->else()
-            (null),
-    ]),
+            (null)
+    ),
     
-    _div(['class' => 'form-group'], [
+    _div('class="form-group"')(
         _label(['for' => 'password'], ['Password']),
-        _input(['type' => 'password', 'id' => 'password', 'name' => 'password']),
-    ]),
+        _input(['type' => 'password', 'id' => 'password', 'name' => 'password'])
+    ),
     
-    _button(['type' => 'submit', 'class' => 'btn-primary'], ['Register']),
-]);
+    _button('type="submit" class="btn-primary"')(['Register'])
+);
 ```
 
 ### Conditional User Menu
 
 ```php
 function userMenu($user) {
-    return _div(['class' => 'user-menu'], [
+    return _div('class="user-menu"')(
         _if($user->isLoggedIn())
-            (_div(['class' => 'user-info'], [
+            (_div('class="user-info"')(
                 _img(['src' => $user->avatar, 'alt' => $user->name, 'class' => 'avatar']),
-                _span(['class' => 'username'], [$user->name]),
+                _span('class="username"')([$user->name]),
                 _if($user->isAdmin())
-                    (_a(['href' => '/admin', 'class' => 'admin-link'], ['Admin Panel']))
+                    (_a('href="/admin" class="admin-link"')(['Admin Panel']))
                 ->else()
                     (null),
-                _a(['href' => '/logout'], ['Logout']),
-            ]))
+                _a(['href' => '/logout'], ['Logout'])
+            ))
         ->else()
-            (_div(['class' => 'auth-info'], [
-                _a(['href' => '/login', 'class' => 'btn'], ['Login']),
-                _a(['href' => '/register', 'class' => 'btn-primary'], ['Register']),
-            ]))
-    ]);
+            (_div('class="auth-info"')(
+                _a('href="/login" class="btn"')(['Login']),
+                _a('href="/register" class="btn-primary"')(['Register'])
+            ))
+    );
 }
 ```
 
@@ -872,18 +1015,18 @@ function button($text, $variant = 'primary', $attrs = []) {
 }
 
 function card($title, $content, $footer = null) {
-    return _div(['class' => 'card'], [
-        _div(['class' => 'card-header'], [
-            _h3(['class' => 'card-title'], [$title])
-        ]),
-        _div(['class' => 'card-body'], [
+    return _div('class="card"')(
+        _div('class="card-header"')(
+            _h3('class="card-title"')([$title])
+        ),
+        _div('class="card-body"')(
             $content
-        ]),
+        ),
         _if($footer !== null)
-            (_div(['class' => 'card-footer'], [$footer]))
+            (_div('class="card-footer"')([$footer]))
         ->else()
             (null)
-    ]);
+    );
 }
 
 // Usage
@@ -903,38 +1046,38 @@ $users = [
     ['id' => 3, 'name' => 'Bob Johnson', 'email' => 'bob@example.com', 'role' => 'User'],
 ];
 
-$table = _table(['class' => 'data-table'], [
-    _thead(null, [
-        _tr(null, [
+// Using map() directly on tbody (recommended)
+$table = _table('class="data-table"')(
+    _thead()(
+        _tr()(
             _th(['ID']),
             _th(['Name']),
             _th(['Email']),
             _th(['Role']),
-            _th(['Actions']),
-        ])
-    ]),
-    _tbody(null, [
-        (new Node)->map($users, function($user) {
-            return _tr(null, [
-                _td([$user['id']]),
-                _td([$user['name']]),
-                _td([$user['email']]),
-                _td([
-                    _span([
-                        'class' => clsf(
-                            'badge badge-%s', 
-                            $user['role'] === 'Admin' ? 'danger' : 'primary'
-                        )
-                    ], [$user['role']])
-                ]),
-                _td([
-                    _a(['href' => "/users/{$user['id']}/edit", 'class' => 'btn-sm'], ['Edit']),
-                    _a(['href' => "/users/{$user['id']}/delete", 'class' => 'btn-sm btn-danger'], ['Delete']),
-                ]),
-            ]);
-        })
-    ])
-]);
+            _th(['Actions'])
+        )
+    ),
+    _tbody()->map($users, function($user) {
+        return _tr()(
+            _td([$user['id']]),
+            _td([$user['name']]),
+            _td([$user['email']]),
+            _td()(
+                _span([
+                    'class' => clsf(
+                        'badge badge-%s', 
+                        $user['role'] === 'Admin' ? 'danger' : 'primary'
+                    )
+                ])([$user['role']])
+            ),
+            _td()(
+                _a('href="/users/' . $user['id'] . '/edit" class="btn-sm"')(['Edit']),
+                ' ',
+                _a('href="/users/' . $user['id'] . '/delete" class="btn-sm btn-danger"')(['Delete'])
+            )
+        );
+    })
+);
 ```
 
 ### SVG Icon Component
@@ -952,16 +1095,16 @@ function icon($name, $size = 24) {
         'height' => $size,
         'viewBox' => '0 0 24 24',
         'class' => "icon icon-{$name}"
-    ], [
+    ])(
         _path(['d' => $icons[$name] ?? '', 'fill' => 'currentColor'])
-    ]);
+    );
 }
 
 // Usage
-$closeButton = _button(['class' => 'btn-icon'], [
+$closeButton = _button('class="btn-icon"')(
     icon('close', 20),
     _span(['Close'])
-]);
+);
 ```
 
 ---
@@ -978,49 +1121,85 @@ _div([$userInput]);
 _raw($userInput);
 ```
 
-### 2. Use Type Hints
+### 2. Prefer Invoke Syntax for Readability
+
+```php
+// ✅ Good - clean and readable
+_div('class="card"')(
+    _h3(['Title']),
+    _p(['Content'])
+);
+
+// ⚠️ Also works but more verbose
+_div(['class' => 'card'], [
+    _h3(['Title']),
+    _p(['Content']),
+]);
+```
+
+### 3. Use map() Directly on Nodes
+
+```php
+// ✅ Good - concise and clear
+_ul()->map($items, fn($item) => _li([$item]));
+
+// ❌ Less elegant
+_ul()([(new Node)->map($items, fn($item) => _li([$item]))]);
+```
+
+### 4. Use Type Hints
 
 ```php
 use IceTea\IceDOM\HtmlNode;
 
 function createCard(string $title, string $content): HtmlNode {
-    return _div(['class' => 'card'], [
+    return _div('class="card"')(
         _h3([$title]),
-        _p([$content]),
-    ]);
+        _p([$content])
+    );
 }
 ```
 
-### 3. Extract Reusable Components
+### 5. Extract Reusable Components
 
 ```php
 // Instead of repeating the same structure
 function badge(string $text, string $variant = 'primary'): HtmlNode {
-    return _span(['class' => "badge badge-{$variant}"], [$text]);
+    return _span("class=\"badge badge-{$variant}\"")([$text]);
 }
 ```
 
-### 4. Use Conditional Rendering
+### 6. Use Conditional Rendering
 
 ```php
-// Instead of ternary in arrays
+// ✅ Good - explicit conditional
 _if($showButton)
     (button('Click Me'))
 ->else()
     (null)
 
-// Not this:
+// ❌ Not recommended - ternary in arrays
 [$showButton ? button('Click Me') : null]
 ```
 
-### 5. Leverage ArrayMap for Lists
+### 7. Omit null First Argument
 
 ```php
-// Clean and readable
-(new Node)->map($items, fn($item) => _li([$item]))
+// ✅ Good - clean
+_tr()(_td(['Cell 1']), _td(['Cell 2']));
 
-// Instead of:
-array_map(fn($item) => _li([$item]), $items)
+// ⚠️ Also works but unnecessary
+_tr(null, [_td(['Cell 1']), _td(['Cell 2'])]);
+```
+
+### 8. Chain Methods Fluently
+
+```php
+_div()
+    ->id('container')
+    ->classes('active', 'primary')
+    ('Content here')
+    ->setAttribute('data-role', 'main');
 ```
 
 ---
