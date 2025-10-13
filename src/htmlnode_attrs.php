@@ -3,6 +3,7 @@
 use IceTea\IceDOM\HtmlNode;
 
 require_once __DIR__.'/Node.php';
+require_once __DIR__.'/HtmlAttributeMethods.php';
 require_once __DIR__.'/HtmlNode.php';
 
 $dashToCamelCase = function ($str) {
@@ -152,7 +153,7 @@ $propStr = implode("\n", array_map(function ($tag) use ($dashToCamelCase) {
     EOT, $dashToCamelCase($tag), in_array($tag, HtmlNode::BOOLEAN_ATTRS) ? ' = true' : '', $tag);
 }, $htmlElementProperties));
 
-$old = file_get_contents(__DIR__.'/HtmlNode.php');
+$old = file_get_contents(__DIR__.'/HtmlAttributeMethods.php');
 $parts = explode('// GENERATED', $old);
 $parts[1] = "\n\t".trim($propStr)."\n\t";
-file_put_contents(__DIR__.'/HtmlNode.php', implode('// GENERATED', $parts));
+file_put_contents(__DIR__.'/HtmlAttributeMethods.php', implode('// GENERATED', $parts));
