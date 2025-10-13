@@ -74,10 +74,10 @@ abstract class Node
      * as a child to another node. It establishes the parent-child relationship
      * in the DOM tree.
      *
-     * @param  Node  $parent  The parent node to set
+     * @param  Node|null  $parent  The parent node to set
      * @return void
      */
-    public function setParent(Node $parent)
+    public function setParent(?Node $parent)
     {
         $this->parent = $parent;
     }
