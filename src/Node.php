@@ -296,7 +296,7 @@ abstract class Node
             }
         }
 
-        return implode(' ', $strArr);
+        return implode('', $strArr);
     }
 
     /**
