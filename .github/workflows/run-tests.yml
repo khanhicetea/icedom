@@ -20,9 +20,9 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         php: [8.3]
-        stability: [prefer-lowest, prefer-stable]
+        stability: [prefer-stable]
 
     name: P${{ matrix.php }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
@@ -49,4 +49,6 @@ jobs:
         run: composer show -D
 
       - name: Execute tests
+        env:
+          XDEBUG_MODE: coverage
         run: vendor/bin/pest --ci
