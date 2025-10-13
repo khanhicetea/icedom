@@ -1,7 +1,6 @@
 <?php
 
 use IceTea\IceDOM\HtmlNode;
-use IceTea\IceDOM\SafeString;
 
 describe('HtmlNode', function () {
 
@@ -9,16 +8,16 @@ describe('HtmlNode', function () {
         it('can be created with no parameters', function () {
             $node = new HtmlNode;
             expect($node->getChildren())->toBe([]);
-            
+
             $reflection = new ReflectionClass($node);
             $property = $reflection->getProperty('tagName');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBeNull();
-            
+
             $property = $reflection->getProperty('attrs');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe([]);
-            
+
             $property = $reflection->getProperty('isVoid');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBeFalse();
@@ -28,12 +27,12 @@ describe('HtmlNode', function () {
             $children = ['child1', 'child2'];
             $node = new HtmlNode($children);
             expect($node->getChildren())->toBe($children);
-            
+
             $reflection = new ReflectionClass($node);
             $property = $reflection->getProperty('tagName');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBeNull();
-            
+
             $property = $reflection->getProperty('attrs');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe([]);
@@ -48,16 +47,16 @@ describe('HtmlNode', function () {
             $node = new HtmlNode($children, $tagName, $attrs, $isVoid);
 
             expect($node->getChildren())->toBe($children);
-            
+
             $reflection = new ReflectionClass($node);
             $property = $reflection->getProperty('tagName');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe($tagName);
-            
+
             $property = $reflection->getProperty('attrs');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe($attrs);
-            
+
             $property = $reflection->getProperty('isVoid');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe($isVoid);
@@ -65,12 +64,12 @@ describe('HtmlNode', function () {
 
         it('can be created as void element', function () {
             $node = new HtmlNode([], 'br', [], true);
-            
+
             $reflection = new ReflectionClass($node);
             $property = $reflection->getProperty('isVoid');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBeTrue();
-            
+
             $property = $reflection->getProperty('tagName');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe('br');
@@ -80,71 +79,71 @@ describe('HtmlNode', function () {
     describe('Static tag() Factory Method', function () {
         it('creates node with string content as first argument', function () {
             $node = HtmlNode::tag('p', 'Hello world', null);
-            
+
             $reflection = new ReflectionClass($node);
             $property = $reflection->getProperty('tagName');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe('p');
-            
+
             $property = $reflection->getProperty('attrs');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe(['_' => 'Hello world']);
-            
+
             expect($node->getChildren())->toBe([]);
         });
 
         it('creates node with string content and children', function () {
             $children = ['child1', 'child2'];
             $node = HtmlNode::tag('p', 'Hello', $children);
-            
+
             $reflection = new ReflectionClass($node);
             $property = $reflection->getProperty('tagName');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe('p');
-            
+
             $property = $reflection->getProperty('attrs');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe(['_' => 'Hello']);
-            
+
             expect($node->getChildren())->toBe($children);
         });
 
         it('creates node with indexed array as children', function () {
             $childArray = ['item1', 'item2'];
             $node = HtmlNode::tag('ul', $childArray, null);
-            
+
             $reflection = new ReflectionClass($node);
             $property = $reflection->getProperty('tagName');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe('ul');
-            
+
             $property = $reflection->getProperty('attrs');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe([]);
-            
+
             expect($node->getChildren())->toBe($childArray);
         });
 
         it('creates node with associative array as attributes', function () {
             $attrs = ['class' => 'test', 'id' => 'my-id'];
             $node = HtmlNode::tag('div', $attrs, null);
-            
+
             $reflection = new ReflectionClass($node);
             $property = $reflection->getProperty('tagName');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe('div');
-            
+
             $property = $reflection->getProperty('attrs');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe($attrs);
-            
+
             expect($node->getChildren())->toBe([]);
         });
 
         it('creates node with associative array containing content', function () {
             $attrs = ['class' => 'test', '_' => 'content'];
             $node = HtmlNode::tag('div', $attrs, null);
-            
+
             $reflection = new ReflectionClass($node);
             $property = $reflection->getProperty('attrs');
             $property->setAccessible(true);
@@ -154,7 +153,7 @@ describe('HtmlNode', function () {
         it('creates node with associative array having first element as content', function () {
             $attrs = ['content', 'class' => 'test'];
             $node = HtmlNode::tag('div', $attrs, null);
-            
+
             $reflection = new ReflectionClass($node);
             $property = $reflection->getProperty('attrs');
             $property->setAccessible(true);
@@ -164,16 +163,16 @@ describe('HtmlNode', function () {
         it('creates node with null first argument and children array', function () {
             $children = ['child1', 'child2'];
             $node = HtmlNode::tag('span', null, $children);
-            
+
             $reflection = new ReflectionClass($node);
             $property = $reflection->getProperty('tagName');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe('span');
-            
+
             $property = $reflection->getProperty('attrs');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe([]);
-            
+
             expect($node->getChildren())->toBe($children);
         });
 
@@ -185,12 +184,12 @@ describe('HtmlNode', function () {
 
         it('creates void element correctly', function () {
             $node = HtmlNode::tag('br', null, null, true);
-            
+
             $reflection = new ReflectionClass($node);
             $property = $reflection->getProperty('isVoid');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBeTrue();
-            
+
             $property = $reflection->getProperty('tagName');
             $property->setAccessible(true);
             expect($property->getValue($node))->toBe('br');
@@ -384,3 +383,5 @@ describe('HtmlNode', function () {
 
             expect($node->getAttribute('class'))->toBe('new');
         });
+    });
+});
