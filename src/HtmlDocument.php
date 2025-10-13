@@ -13,11 +13,4 @@ class HtmlDocument extends HtmlNode
             parent::__toString(),
         ]);
     }
-
-    // TODO : String buffering
-    // public function echo()
-    // {
-    //     echo '<!DOCTYPE html>';
-    //     parent::echo();
-    // }
 }
