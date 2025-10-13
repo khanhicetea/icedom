@@ -36,11 +36,8 @@ it('non-empty init children', function () {
         new RawNode([' ']),
         new RawNode(['World']),
     ];
-    $node = new ArrayMapNode(['Hi, ', 'Chao, '], $items);
-
-    $result = $node->__toString();
-    expect($result)->toBe('Hello World');
-});
+    new ArrayMapNode(['Hi, ', 'Chao, '], $items);
+})->throws(Exception::class);
 
 it('can use a mapping function to transform array items', function () {
     $items = [1, 2, 3];
