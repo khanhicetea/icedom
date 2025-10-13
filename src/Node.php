@@ -10,7 +10,7 @@ use function htmlspecialchars;
 use function implode;
 
 /**
- * Abstract base class for DOM nodes in the IceDOM library.
+ * Base class for DOM nodes in the IceDOM library.
  *
  * This class provides the foundation for building HTML structures programmatically
  * using a fluent, chainable API. It implements a tree structure where nodes can
@@ -20,7 +20,7 @@ use function implode;
  * closures for lazy evaluation, and any Stringable objects. The class handles
  * HTML escaping for security and provides functional programming utilities.
  */
-abstract class Node
+class Node
 {
     /**
      * HTML entity encoding flags for secure output.
@@ -212,10 +212,10 @@ abstract class Node
     }
 
     /**
-     * Creates and adds an ArrayMapNode for rendering arrays of data.
+     * Creates and adds an ArrayMap for rendering arrays of data.
      *
      * This method provides a convenient way to render collections of data
-     * by creating an ArrayMapNode that will iterate over the provided array
+     * by creating an ArrayMap that will iterate over the provided array
      * and apply the mapping function to each element.
      *
      * @param  iterable  $arr  The array or iterable to map over
@@ -224,7 +224,10 @@ abstract class Node
      */
     public function map(iterable $arr, $mapFunction = null): static
     {
-        return $this->appendChild(new ArrayMapNode([], $arr, $mapFunction));
+        $arrayMap = new ArrayMap($arr, $mapFunction);
+        $arrayMap->setParent($this);
+
+        return $this->appendChild($arrayMap);
     }
 
     /**

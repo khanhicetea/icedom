@@ -1,6 +1,6 @@
 <?php
 
-use IceTea\IceDOM\ArrayMapNode;
+use IceTea\IceDOM\ArrayMap;
 use IceTea\IceDOM\Node;
 use IceTea\IceDOM\SafeString;
 
@@ -252,7 +252,7 @@ describe('Node', function () {
     });
 
     describe('map() method', function () {
-        it('creates ArrayMapNode with iterable', function () {
+        it('creates ArrayMap with iterable', function () {
             $node = new TestNode;
             $array = ['item1', 'item2', 'item3'];
 
@@ -260,10 +260,10 @@ describe('Node', function () {
 
             $children = $node->getChildren();
             expect($children)->toHaveCount(1);
-            expect($children[0])->toBeInstanceOf(ArrayMapNode::class);
+            expect($children[0])->toBeInstanceOf(ArrayMap::class);
         });
 
-        it('creates ArrayMapNode with map function', function () {
+        it('creates ArrayMap with map function', function () {
             $node = new TestNode;
             $array = [1, 2, 3];
             $mapFunction = function ($item) {
@@ -273,7 +273,7 @@ describe('Node', function () {
             $node->map($array, $mapFunction);
 
             $children = $node->getChildren();
-            expect($children[0])->toBeInstanceOf(ArrayMapNode::class);
+            expect($children[0])->toBeInstanceOf(ArrayMap::class);
         });
     });
 

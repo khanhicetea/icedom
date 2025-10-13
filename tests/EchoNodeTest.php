@@ -468,16 +468,15 @@ describe('EchoNode', function () {
     });
 
     describe('Integration with Other Components', function () {
-        it('works with ArrayMapNode children', function () {
-            $arrayMapNode = new \IceTea\IceDOM\ArrayMapNode(
-                [],
+        it('works with ArrayMap children', function () {
+            $arrayMap = new \IceTea\IceDOM\ArrayMap(
                 ['a', 'b', 'c'],
                 function ($item) {
                     echo $item.'_mapped ';
                 }
             );
 
-            $node = new EchoNode([$arrayMapNode]);
+            $node = new EchoNode([$arrayMap]);
             expect((string) $node)->toBe('a_mapped b_mapped c_mapped ');
         });
 
