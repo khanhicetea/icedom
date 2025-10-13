@@ -68,6 +68,10 @@ class HtmlNode extends Node
         array $attrs = [],
         bool $isVoid = false,
     ) {
+        if (empty($tagName)) {
+            throw new \Exception('Tag name is required');
+        }
+        
         parent::__construct($children);
         $this->tagName = $tagName;
         $this->attrs = $attrs;
