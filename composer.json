@@ -23,6 +23,9 @@
         "spatie/ray": "^1.28"
     },
     "autoload": {
+        "files": [
+            "src/generated_html_tags.php"
+        ],
         "psr-4": {
             "IceTea\\IceDOM\\": "src"
         }
