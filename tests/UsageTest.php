@@ -1,8 +1,5 @@
 <?php
 
-// Load generated HTML tag functions (functions are in global namespace)
-require_once __DIR__ . '/../src/generated_html_tags.php';
-
 describe('Basic Patterns', function () {
     test('empty element', function () {
         $result = _div();
