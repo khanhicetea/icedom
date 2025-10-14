@@ -42,8 +42,8 @@ use function ob_start;
  * echo $echoNode; // Outputs: <div>Hello</div><span>World</span>
  * ```
  *
- * @package IceTea\IceDOM
  * @author IceTea Team
+ *
  * @see Node Base class with HTML escaping
  * @see RawNode For raw string concatenation without evaluation
  */

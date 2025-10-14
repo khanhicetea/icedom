@@ -33,15 +33,11 @@ namespace IceTea\IceDOM;
  * ]);
  * echo $registry->compile(); // CSS output
  * ```
- *
- * @package IceTea\IceDOM
  */
 class StyleRegistry
 {
     /**
      * Singleton instance of the registry.
-     *
-     * @var self|null
      */
     private static ?self $instance = null;
 
@@ -82,7 +78,7 @@ class StyleRegistry
     public static function getInstance(): self
     {
         if (self::$instance === null) {
-            self::$instance = new self();
+            self::$instance = new self;
         }
 
         return self::$instance;
@@ -95,9 +91,9 @@ class StyleRegistry
      * returns the existing scope identifier to enable style deduplication.
      * Otherwise, creates a new scope identifier and stores the rules.
      *
-     * @param string $componentHash Unique identifier for the component (typically content hash)
-     * @param array $rules CSS rules in nested array format
-     *                     Example: ['color' => 'red', '& .child' => ['margin' => '1rem']]
+     * @param  string  $componentHash  Unique identifier for the component (typically content hash)
+     * @param  array  $rules  CSS rules in nested array format
+     *                        Example: ['color' => 'red', '& .child' => ['margin' => '1rem']]
      * @return string The scope class name (e.g., 'c-a3f8b9c4')
      */
     public function register(string $componentHash, array $rules): string
@@ -119,7 +115,7 @@ class StyleRegistry
      * Processes all registered styles, expands nested selectors, and optionally
      * minifies the output for production use.
      *
-     * @param bool $minify Whether to minify the CSS output (remove whitespace, comments)
+     * @param  bool  $minify  Whether to minify the CSS output (remove whitespace, comments)
      * @return string Complete CSS stylesheet with all scoped styles
      */
     public function compile(bool $minify = false): string
@@ -138,8 +134,8 @@ class StyleRegistry
      * Processes nested array structures and expands them into flat CSS rules.
      * Supports & parent selector for advanced selector composition and media queries.
      *
-     * @param array $rules Nested CSS rules array
-     * @param string $context Current selector context (e.g., '.c-a3f8b9c4')
+     * @param  array  $rules  Nested CSS rules array
+     * @param  string  $context  Current selector context (e.g., '.c-a3f8b9c4')
      * @return string Compiled CSS rules for this context
      */
     private function compileRules(array $rules, string $context): string
@@ -188,8 +184,8 @@ class StyleRegistry
      * - '&:hover': Becomes '.context:hover'
      * - '.child': Becomes '.context .child' (descendant)
      *
-     * @param string $selector Selector to resolve (may contain &)
-     * @param string $context Current selector context
+     * @param  string  $selector  Selector to resolve (may contain &)
+     * @param  string  $context  Current selector context
      * @return string Fully resolved selector
      */
     private function resolveSelector(string $selector, string $context): string
@@ -209,7 +205,7 @@ class StyleRegistry
      * - Removes newlines and extra whitespace
      * - Removes spaces around CSS syntax characters
      *
-     * @param string $css CSS string to minify
+     * @param  string  $css  CSS string to minify
      * @return string Minified CSS string
      */
     private function minify(string $css): string
@@ -231,8 +227,6 @@ class StyleRegistry
      *
      * Useful for testing or when rendering multiple independent pages in the
      * same process (e.g., server-side rendering scenarios).
-     *
-     * @return void
      */
     public function reset(): void
     {
@@ -257,7 +251,7 @@ class StyleRegistry
      *
      * Useful for debugging and testing.
      *
-     * @param string $scopeId The scope identifier
+     * @param  string  $scopeId  The scope identifier
      * @return array|null The style rules, or null if not found
      */
     public function getStylesForScope(string $scopeId): ?array
@@ -265,4 +259,3 @@ class StyleRegistry
         return $this->styles[$scopeId] ?? null;
     }
 }
-

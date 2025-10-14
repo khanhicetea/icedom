@@ -6,8 +6,6 @@
  * This file provides helper functions for creating styled components with scoped CSS.
  * Components register their styles with the global StyleRegistry and receive unique
  * scope class names to prevent style collisions.
- *
- * @package IceTea\IceDOM
  */
 
 namespace IceTea\IceDOM;
@@ -50,8 +48,8 @@ use Closure;
  * // Outputs: <button class="c-a3f8b9c4">Click Me</button>
  * ```
  *
- * @param string $tag The HTML tag name (div, span, button, etc.)
- * @param array $cssRules Nested array of CSS rules and properties
+ * @param  string  $tag  The HTML tag name (div, span, button, etc.)
+ * @param  array  $cssRules  Nested array of CSS rules and properties
  * @return Closure Factory function that creates styled HTML nodes
  *                 Signature: function(mixed $firstArg = null, ?array $children = null): HtmlNode
  */
@@ -71,7 +69,7 @@ function styled(string $tag, array $cssRules): Closure
         }
 
         $node = $helperFunction($firstArg, $children);
-        
+
         // Add the scope class while preserving existing classes
         if ($node instanceof HtmlNode) {
             $existingClass = $node->getAttribute('class', '');
@@ -108,8 +106,8 @@ function styled(string $tag, array $cssRules): Closure
  * ]);
  * ```
  *
- * @param bool $minify Whether to minify the CSS output (default: false)
- *                     When true, removes whitespace and comments for production
+ * @param  bool  $minify  Whether to minify the CSS output (default: false)
+ *                        When true, removes whitespace and comments for production
  * @return HtmlNode A <style> element containing all compiled CSS
  */
 function _styles(bool $minify = false): HtmlNode
@@ -142,10 +140,10 @@ function _styles(bool $minify = false): HtmlNode
  * ]);
  * ```
  *
- * @param string $tag The HTML tag name
- * @param array $cssRules CSS rules for scoped styling
- * @param mixed $firstArg Attributes or content for the element
- * @param array|null $children Child elements (optional)
+ * @param  string  $tag  The HTML tag name
+ * @param  array  $cssRules  CSS rules for scoped styling
+ * @param  mixed  $firstArg  Attributes or content for the element
+ * @param  array|null  $children  Child elements (optional)
  * @return HtmlNode The styled HTML element
  */
 function _styled(string $tag, array $cssRules, mixed $firstArg = null, ?array $children = null): HtmlNode
@@ -154,4 +152,3 @@ function _styled(string $tag, array $cssRules, mixed $firstArg = null, ?array $c
 
     return $styledFactory($firstArg, $children);
 }
-

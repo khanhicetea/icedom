@@ -48,8 +48,8 @@ use function str_replace;
  * echo $input; // <input type="checkbox" checked>
  * ```
  *
- * @package IceTea\IceDOM
  * @author IceTea Team
+ *
  * @see Node Base class for tree structure and children
  * @see HtmlAttributeMethods Trait providing attribute setter methods
  */
@@ -108,19 +108,20 @@ class HtmlNode extends Node
      * Constructor validates tag name and initializes the HTML element structure.
      * Void elements cannot have children (enforced by appendChild override).
      *
-     * @param array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null> $children Child content for the element.
-     *                                                                                            Empty for void elements.
-     * @param string|null $tagName The HTML tag name (required).
-     *                              - string: Tag name like 'div', 'span', 'input'
-     *                              - null: Throws exception (tag name is mandatory)
-     * @param array<string, mixed> $attrs Initial HTML attributes.
-     *                                    - Standard attributes: ['id' => 'main', 'class' => 'btn']
-     *                                    - Boolean attributes: ['disabled' => true]
-     *                                    - '_' key: Raw content in opening tag
-     *                                    - Closure values: Evaluated during rendering
-     * @param bool $isVoid Whether this is a void/self-closing element.
-     *                     - true: No closing tag, appendChild throws exception
-     *                     - false: Normal element with closing tag
+     * @param  array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null>  $children  Child content for the element.
+     *                                                                                                  Empty for void elements.
+     * @param  string|null  $tagName  The HTML tag name (required).
+     *                                - string: Tag name like 'div', 'span', 'input'
+     *                                - null: Throws exception (tag name is mandatory)
+     * @param  array<string, mixed>  $attrs  Initial HTML attributes.
+     *                                       - Standard attributes: ['id' => 'main', 'class' => 'btn']
+     *                                       - Boolean attributes: ['disabled' => true]
+     *                                       - '_' key: Raw content in opening tag
+     *                                       - Closure values: Evaluated during rendering
+     * @param  bool  $isVoid  Whether this is a void/self-closing element.
+     *                        - true: No closing tag, appendChild throws exception
+     *                        - false: Normal element with closing tag
+     *
      * @throws \Exception If tagName is null or empty string
      */
     public function __construct(
@@ -132,7 +133,7 @@ class HtmlNode extends Node
         if (empty($tagName)) {
             throw new \Exception('Tag name is required');
         }
-        
+
         parent::__construct($children);
         $this->tagName = $tagName;
         $this->attrs = $attrs;
@@ -168,16 +169,16 @@ class HtmlNode extends Node
      * HtmlNode::tag('div', null, [$child]) // <div>$child</div>
      * ```
      *
-     * @param string $tagName The HTML tag name (div, span, etc.)
-     * @param mixed $firstArgument Flexible first parameter:
-     *                             - string: Used as '_' attribute (text content)
-     *                             - array: Attributes (associative) or children (list)
-     *                             - null: Ignore, use $children parameter
-     *                             - Other: Single child to wrap
-     * @param array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null>|null $children Child nodes when $firstArgument is string/attributes/null.
-     *                                                                                                 - null: No children
-     *                                                                                                 - array: Child nodes
-     * @param bool $isVoid Whether this is a void/self-closing element
+     * @param  string  $tagName  The HTML tag name (div, span, etc.)
+     * @param  mixed  $firstArgument  Flexible first parameter:
+     *                                - string: Used as '_' attribute (text content)
+     *                                - array: Attributes (associative) or children (list)
+     *                                - null: Ignore, use $children parameter
+     *                                - Other: Single child to wrap
+     * @param  array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null>|null  $children  Child nodes when $firstArgument is string/attributes/null.
+     *                                                                                                       - null: No children
+     *                                                                                                       - array: Child nodes
+     * @param  bool  $isVoid  Whether this is a void/self-closing element
      * @return static New HtmlNode instance with configured tag, attributes, and children
      */
     public static function tag(string $tagName, mixed $firstArgument, ?array $children, bool $isVoid = false): static
@@ -223,9 +224,10 @@ class HtmlNode extends Node
      * Void elements (br, img, input, etc.) cannot have children and will throw
      * an exception if you attempt to add children to them.
      *
-     * @param Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null $child The child content to add.
-     *                                                                                   See Node::appendChild() for type details.
+     * @param  Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null  $child  The child content to add.
+     *                                                                                        See Node::appendChild() for type details.
      * @return static Returns $this for method chaining
+     *
      * @throws \Exception If attempting to add children to a void element
      */
     public function appendChild($child): static
@@ -304,12 +306,12 @@ class HtmlNode extends Node
     /**
      * Sets an HTML attribute value.
      *
-     * @param string $key The attribute name (e.g., 'id', 'class', 'data-value')
-     * @param mixed $value The attribute value.
-     *                     - string/int/float: Rendered as key="value"
-     *                     - bool: For boolean attrs, true renders as just key, false skips
-     *                     - Closure: Evaluated during rendering
-     *                     - null: Attribute not rendered
+     * @param  string  $key  The attribute name (e.g., 'id', 'class', 'data-value')
+     * @param  mixed  $value  The attribute value.
+     *                        - string/int/float: Rendered as key="value"
+     *                        - bool: For boolean attrs, true renders as just key, false skips
+     *                        - Closure: Evaluated during rendering
+     *                        - null: Attribute not rendered
      * @return static Returns $this for method chaining
      */
     public function setAttribute($key, $value): static
@@ -322,8 +324,8 @@ class HtmlNode extends Node
     /**
      * Gets an HTML attribute value.
      *
-     * @param string $key The attribute name to retrieve
-     * @param mixed $default Default value returned if attribute doesn't exist
+     * @param  string  $key  The attribute name to retrieve
+     * @param  mixed  $default  Default value returned if attribute doesn't exist
      * @return mixed The attribute value if set, otherwise $default
      */
     public function getAttribute($key, $default = null)
@@ -343,8 +345,8 @@ class HtmlNode extends Node
      * $node->aria_label('Button'); // Sets aria-label="Button"
      * ```
      *
-     * @param string $key The method name (becomes attribute name, underscores converted to hyphens)
-     * @param array<mixed> $args Method arguments, first element becomes attribute value
+     * @param  string  $key  The method name (becomes attribute name, underscores converted to hyphens)
+     * @param  array<mixed>  $args  Method arguments, first element becomes attribute value
      * @return static Returns $this for method chaining
      */
     public function __call($key, $args): static
@@ -366,7 +368,7 @@ class HtmlNode extends Node
      * $label = $node->aria_label; // Gets aria-label attribute
      * ```
      *
-     * @param string $key The property name (becomes attribute name, underscores converted to hyphens)
+     * @param  string  $key  The property name (becomes attribute name, underscores converted to hyphens)
      * @return mixed The attribute value or null if not set
      */
     public function __get($key)
@@ -381,7 +383,7 @@ class HtmlNode extends Node
      *
      * Convenience method for setting the id attribute (equivalent to setAttribute('id', $id)).
      *
-     * @param string $id The unique identifier for this element
+     * @param  string  $id  The unique identifier for this element
      * @return static Returns $this for method chaining
      */
     public function id($id): static
@@ -408,11 +410,11 @@ class HtmlNode extends Node
      * $node->classes(['btn', 'primary'], 'large'); // class="btn primary large"
      * ```
      *
-     * @param array<string|bool>|string|null ...$args Variable class specifications.
-     *                                                 - string: Class name to add
-     *                                                 - array (list): ['class1', 'class2'] all added
-     *                                                 - array (assoc): ['class' => true/false] conditional
-     *                                                 - null: Ignored
+     * @param  array<string|bool>|string|null  ...$args  Variable class specifications.
+     *                                                   - string: Class name to add
+     *                                                   - array (list): ['class1', 'class2'] all added
+     *                                                   - array (assoc): ['class' => true/false] conditional
+     *                                                   - null: Ignored
      * @return static Returns $this for method chaining
      */
     public function classes(array|string|null ...$args): static

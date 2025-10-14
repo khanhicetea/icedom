@@ -95,7 +95,7 @@ test('_styles() with minify option', function () {
     styled('div', ['color' => 'red', 'padding' => '1rem']);
 
     $normalStyles = (string) _styles(false);
-    
+
     // Reset to test minified
     StyleRegistry::getInstance()->reset();
     styled('div', ['color' => 'red', 'padding' => '1rem']);
@@ -254,4 +254,3 @@ test('styled component works with string attributes shorthand', function () {
         ->and($html)->toContain('class="c-')
         ->and($html)->toContain('>Text</span>');
 });
-

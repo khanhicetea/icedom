@@ -36,7 +36,6 @@ use function implode;
  * - Stringable: Converted to string then HTML-escaped
  * - null: Ignored and not rendered
  *
- * @package IceTea\IceDOM
  * @author IceTea Team
  */
 class Node
@@ -83,14 +82,14 @@ class Node
      * All provided children are added via appendChildren(), which handles
      * parent relationship setting for Node instances.
      *
-     * @param array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null> $children Initial child content.
-     *                                                                                             - Node: Child nodes with parent set automatically
-     *                                                                                             - Closure: Lazy-evaluated content
-     *                                                                                             - string/int/float: Direct content
-     *                                                                                             - SafeStringable: Pre-sanitized HTML content
-     *                                                                                             - Stringable: Objects with __toString()
-     *                                                                                             - ArrayMap: Iterable mapping utility
-     *                                                                                             - null: Ignored
+     * @param  array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null>  $children  Initial child content.
+     *                                                                                                  - Node: Child nodes with parent set automatically
+     *                                                                                                  - Closure: Lazy-evaluated content
+     *                                                                                                  - string/int/float: Direct content
+     *                                                                                                  - SafeStringable: Pre-sanitized HTML content
+     *                                                                                                  - Stringable: Objects with __toString()
+     *                                                                                                  - ArrayMap: Iterable mapping utility
+     *                                                                                                  - null: Ignored
      */
     public function __construct(
         array $children = [],
@@ -105,9 +104,9 @@ class Node
      * It creates the upward link in the parent-child relationship, allowing
      * nodes to access their parent context.
      *
-     * @param Node|null $parent The parent node reference.
-     *                          - Node: Establishes this node as a child of the parent
-     *                          - null: Detaches this node from its parent (orphan node)
+     * @param  Node|null  $parent  The parent node reference.
+     *                             - Node: Establishes this node as a child of the parent
+     *                             - null: Detaches this node from its parent (orphan node)
      * @return void
      */
     public function setParent(?Node $parent)
@@ -140,11 +139,11 @@ class Node
      * });
      * ```
      *
-     * @param Closure|callable|null $hook The transformation function to apply.
-     *                                    - Closure: Executed with call($this, $this)
-     *                                    - callable: Converted to Closure then executed
-     *                                    - null: Ignored, no operation performed
-     *                                    Signature: function(Node $node): void|mixed
+     * @param  Closure|callable|null  $hook  The transformation function to apply.
+     *                                       - Closure: Executed with call($this, $this)
+     *                                       - callable: Converted to Closure then executed
+     *                                       - null: Ignored, no operation performed
+     *                                       Signature: function(Node $node): void|mixed
      * @return static Returns $this for method chaining regardless of hook return value
      */
     public function use(Closure|callable|null $hook): static
@@ -177,12 +176,12 @@ class Node
      * });
      * ```
      *
-     * @param Closure|callable|null $hook The function to apply to each Node child.
-     *                                    - Closure: Applied to each Node child
-     *                                    - callable: Converted to Closure then applied
-     *                                    - null: Ignored, no operation
-     *                                    Signature: function(Node $child): void|mixed
-     *                                    Note: Non-Node children (strings, numbers, etc.) are skipped
+     * @param  Closure|callable|null  $hook  The function to apply to each Node child.
+     *                                       - Closure: Applied to each Node child
+     *                                       - callable: Converted to Closure then applied
+     *                                       - null: Ignored, no operation
+     *                                       Signature: function(Node $child): void|mixed
+     *                                       Note: Non-Node children (strings, numbers, etc.) are skipped
      * @return static Returns $this for method chaining
      */
     public function childrenUse(Closure|callable|null $hook): static
@@ -221,15 +220,15 @@ class Node
      * - null values are ignored (no-op)
      * - All other types are stored and processed during __toString()
      *
-     * @param Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null $child The content to add.
-     *                                                                                   - Node: Another DOM node, parent set automatically
-     *                                                                                   - Closure: Lazy-evaluated function, called with parent during render
-     *                                                                                   - string: Text content, HTML-escaped during render
-     *                                                                                   - int|float: Numeric content, not escaped
-     *                                                                                   - SafeStringable: Pre-sanitized HTML, not escaped
-     *                                                                                   - Stringable: Object with __toString(), escaped during render
-     *                                                                                   - ArrayMap: Iterable mapper, rendered during __toString()
-     *                                                                                   - null: Ignored, no action taken
+     * @param  Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null  $child  The content to add.
+     *                                                                                        - Node: Another DOM node, parent set automatically
+     *                                                                                        - Closure: Lazy-evaluated function, called with parent during render
+     *                                                                                        - string: Text content, HTML-escaped during render
+     *                                                                                        - int|float: Numeric content, not escaped
+     *                                                                                        - SafeStringable: Pre-sanitized HTML, not escaped
+     *                                                                                        - Stringable: Object with __toString(), escaped during render
+     *                                                                                        - ArrayMap: Iterable mapper, rendered during __toString()
+     *                                                                                        - null: Ignored, no action taken
      * @return static Returns $this for method chaining
      */
     public function appendChild($child): static
@@ -251,9 +250,9 @@ class Node
      * Convenience method that iterates the array and calls appendChild()
      * for each element, ensuring consistent handling of all content types.
      *
-     * @param array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null> $children Array of content to add.
-     *                                                                                             Each element handled according to appendChild() rules.
-     *                                                                                             See appendChild() documentation for type-specific behavior.
+     * @param  array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null>  $children  Array of content to add.
+     *                                                                                                  Each element handled according to appendChild() rules.
+     *                                                                                                  See appendChild() documentation for type-specific behavior.
      * @return static Returns $this for method chaining
      */
     public function appendChildren(array $children): static
@@ -277,13 +276,13 @@ class Node
      * - Building repetitive HTML structures
      * - Dynamic list generation
      *
-     * @param iterable<mixed> $arr The collection to iterate and render.
-     *                             - array: Standard PHP array
-     *                             - Iterator/Generator: Any iterable object
-     * @param callable|null $mapFunction Optional transformation for each element.
-     *                                   - callable: Function receiving ($value, $key), returning renderable content
-     *                                   - null: Elements used directly without transformation
-     *                                   Signature: function(mixed $value, int|string $key): Node|string|Stringable|null
+     * @param  iterable<mixed>  $arr  The collection to iterate and render.
+     *                                - array: Standard PHP array
+     *                                - Iterator/Generator: Any iterable object
+     * @param  callable|null  $mapFunction  Optional transformation for each element.
+     *                                      - callable: Function receiving ($value, $key), returning renderable content
+     *                                      - null: Elements used directly without transformation
+     *                                      Signature: function(mixed $value, int|string $key): Node|string|Stringable|null
      * @return static Returns $this for method chaining
      */
     public function map(iterable $arr, $mapFunction = null): static
@@ -307,8 +306,8 @@ class Node
      * // Equivalent to: $div->appendChildren(['Hello', $span, 'World']);
      * ```
      *
-     * @param mixed ...$children Variable number of children to append.
-     *                           Each child can be any type accepted by appendChild().
+     * @param  mixed  ...$children  Variable number of children to append.
+     *                              Each child can be any type accepted by appendChild().
      * @return static Returns $this for method chaining
      */
     public function __invoke(...$children): static
@@ -382,9 +381,9 @@ class Node
      * Utility method for consistent lazy evaluation handling across the class.
      * Used internally for conditional evaluation of potentially lazy values.
      *
-     * @param mixed $value The value to potentially evaluate.
-     *                     - Closure: Executed with $this as parameter, returns result
-     *                     - Other types: Returned unchanged
+     * @param  mixed  $value  The value to potentially evaluate.
+     *                        - Closure: Executed with $this as parameter, returns result
+     *                        - Other types: Returned unchanged
      * @return mixed The closure result if Closure, otherwise the original value
      */
     protected function tryEvalClosure($value)

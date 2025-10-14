@@ -619,4 +619,3 @@ describe('SlotNode', function () {
         });
     });
 });
-

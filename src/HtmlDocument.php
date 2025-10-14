@@ -43,8 +43,8 @@ use function implode;
  * // <html><head><title>My Page</title></head><body>Hello World</body></html>
  * ```
  *
- * @package IceTea\IceDOM
  * @author IceTea Team
+ *
  * @see HtmlNode Parent class for HTML element rendering
  */
 class HtmlDocument extends HtmlNode

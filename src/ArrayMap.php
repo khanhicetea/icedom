@@ -23,7 +23,6 @@ use function is_callable;
  * - Dynamic content generation from arrays
  * - Building repetitive HTML structures programmatically
  *
- * @package IceTea\IceDOM
  * @author IceTea Team
  */
 class ArrayMap implements SafeStringable
@@ -38,7 +37,7 @@ class ArrayMap implements SafeStringable
     /**
      * The transformation function applied to each array element.
      *
-     * @var callable|null Function signature: function(mixed $value, int|string $key): Node|string|Stringable|null
+     * @var callable|null Function signature: function(mixed, int|string): Node|string|Stringable|null
      */
     protected $mapFunction;
 
@@ -55,16 +54,16 @@ class ArrayMap implements SafeStringable
     /**
      * Create a new ArrayMap instance.
      *
-     * @param iterable<mixed>|null $arr The iterable data source to map over.
-     *                                   - array: Standard PHP array
-     *                                   - Iterator: Any object implementing Iterator interface
-     *                                   - Generator: Result from a generator function
-     *                                   - null: Produces empty string output
-     * @param callable|null $mapFunction Optional transformation function for each element.
-     *                                   - Receives: ($value, $key) where $value is the current element and $key is its index/key
-     *                                   - Returns: Node|string|Stringable|null to be rendered
-     *                                   - null: Elements are used directly without transformation
-     *                                   - Bound to parent node context when rendering if parent is set
+     * @param  iterable<mixed>|null  $arr  The iterable data source to map over.
+     *                                     - array: Standard PHP array
+     *                                     - Iterator: Any object implementing Iterator interface
+     *                                     - Generator: Result from a generator function
+     *                                     - null: Produces empty string output
+     * @param  callable|null  $mapFunction  Optional transformation function for each element.
+     *                                      - Receives: ($value, $key) where $value is the current element and $key is its index/key
+     *                                      - Returns: Node|string|Stringable|null to be rendered
+     *                                      - null: Elements are used directly without transformation
+     *                                      - Bound to parent node context when rendering if parent is set
      */
     public function __construct(
         ?iterable $arr = null,
@@ -82,9 +81,9 @@ class ArrayMap implements SafeStringable
      * properties and methods. Any Node instances created during mapping will have their
      * parent reference set to this parent node.
      *
-     * @param Node|null $parent The parent node to establish context with.
-     *                          - Node: Sets the parent context for binding and relationships
-     *                          - null: Removes parent context
+     * @param  Node|null  $parent  The parent node to establish context with.
+     *                             - Node: Sets the parent context for binding and relationships
+     *                             - null: Removes parent context
      * @return static Returns $this for method chaining
      */
     public function setParent(?Node $parent): static

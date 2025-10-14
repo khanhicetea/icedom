@@ -135,7 +135,7 @@ test('minifies CSS when requested', function () {
     ];
 
     $registry->register('test-hash', $rules);
-    
+
     $normalCss = $registry->compile(false);
     $minifiedCss = $registry->compile(true);
 
@@ -298,4 +298,3 @@ test('handles multiple media queries', function () {
         ->and($css)->toContain('@media (max-width: 480px)')
         ->and($css)->toContain('font-size: 12px');
 });
-

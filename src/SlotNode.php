@@ -45,8 +45,8 @@ use function call_user_func;
  * echo $slot2; // Outputs: Fallback content
  * ```
  *
- * @package IceTea\IceDOM
  * @author IceTea Team
+ *
  * @see Node Base class for children rendering
  */
 class SlotNode extends Node
@@ -61,16 +61,16 @@ class SlotNode extends Node
     /**
      * Create a new SlotNode with optional slot function and fallback children.
      *
-     * @param array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null> $children Fallback content when slot function is null.
-     *                                                                                             - Used only if slotFunction is not provided
-     *                                                                                             - Rendered via parent Node::childrenToString()
-     *                                                                                             - All Node child types supported
-     * @param Closure|null $slotFunction Optional dynamic content generator.
-     *                                    - Closure: Called during __toString(), return value rendered
-     *                                    - null: Falls back to rendering children
-     *                                    - Signature: function(): Node|string|Stringable|int|float|null
-     *                                    - No parameters passed to the closure
-     *                                    - Return value cast to string
+     * @param  array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null>  $children  Fallback content when slot function is null.
+     *                                                                                                  - Used only if slotFunction is not provided
+     *                                                                                                  - Rendered via parent Node::childrenToString()
+     *                                                                                                  - All Node child types supported
+     * @param  Closure|null  $slotFunction  Optional dynamic content generator.
+     *                                      - Closure: Called during __toString(), return value rendered
+     *                                      - null: Falls back to rendering children
+     *                                      - Signature: function(): Node|string|Stringable|int|float|null
+     *                                      - No parameters passed to the closure
+     *                                      - Return value cast to string
      */
     public function __construct(
         array $children = [],

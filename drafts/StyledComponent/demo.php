@@ -1,12 +1,12 @@
 <?php
 
-require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../../src/generated_html_tags.php';
-require_once __DIR__ . '/styled_helpers.php';
-require_once __DIR__ . '/StyleRegistry.php';
+require_once __DIR__.'/../../vendor/autoload.php';
+require_once __DIR__.'/../../src/generated_html_tags.php';
+require_once __DIR__.'/styled_helpers.php';
+require_once __DIR__.'/StyleRegistry.php';
 
-use function IceTea\IceDOM\styled;
 use function IceTea\IceDOM\_styles;
+use function IceTea\IceDOM\styled;
 
 // ============================================================================
 // COMPLEX STYLED COMPONENTS DEMO
@@ -21,53 +21,53 @@ $StyledNav = styled('nav', [
     'position' => 'sticky',
     'top' => '0',
     'z-index' => '1000',
-    
+
     '& .nav-container' => [
         'max-width' => '1200px',
         'margin' => '0 auto',
         'display' => 'flex',
         'justify-content' => 'space-between',
         'align-items' => 'center',
-        
+
         '& .logo' => [
             'font-size' => '1.5rem',
             'font-weight' => 'bold',
             'color' => 'white',
             'text-decoration' => 'none',
-            
+
             '&:hover' => [
                 'opacity' => '0.8',
                 'transform' => 'scale(1.05)',
                 'transition' => 'all 0.3s ease',
             ],
         ],
-        
+
         '& .nav-links' => [
             'display' => 'flex',
             'gap' => '2rem',
             'list-style' => 'none',
             'margin' => '0',
             'padding' => '0',
-            
+
             '& li' => [
                 'position' => 'relative',
-                
+
                 '& a' => [
                     'color' => 'white',
                     'text-decoration' => 'none',
                     'padding' => '0.5rem 1rem',
                     'border-radius' => '4px',
                     'transition' => 'all 0.3s ease',
-                    
+
                     '&:hover' => [
                         'background' => 'rgba(255, 255, 255, 0.1)',
                         'transform' => 'translateY(-2px)',
                     ],
-                    
+
                     '&:active' => [
                         'transform' => 'translateY(0)',
                     ],
-                    
+
                     '&::after' => [
                         'content' => '""',
                         'position' => 'absolute',
@@ -79,12 +79,12 @@ $StyledNav = styled('nav', [
                         'transition' => 'width 0.3s ease',
                     ],
                 ],
-                
+
                 '&:hover a::after' => [
                     'width' => '100%',
                 ],
             ],
-            
+
             // Mobile responsive
             '@media (max-width: 768px)' => [
                 'flex-direction' => 'column',
@@ -101,7 +101,7 @@ $StyledHero = styled('section', [
     'text-align' => 'center',
     'position' => 'relative',
     'overflow' => 'hidden',
-    
+
     '&::before' => [
         'content' => '""',
         'position' => 'absolute',
@@ -112,40 +112,40 @@ $StyledHero = styled('section', [
         'background' => 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
         'animation' => 'pulse 4s ease-in-out infinite',
     ],
-    
+
     '& .hero-content' => [
         'position' => 'relative',
         'z-index' => '1',
         'max-width' => '800px',
         'margin' => '0 auto',
-        
+
         '& h1' => [
             'font-size' => '3.5rem',
             'color' => 'white',
             'margin-bottom' => '1rem',
             'font-weight' => 'bold',
             'text-shadow' => '2px 2px 4px rgba(0,0,0,0.2)',
-            
+
             '@media (max-width: 768px)' => [
                 'font-size' => '2rem',
             ],
-            
+
             '@media (max-width: 480px)' => [
                 'font-size' => '1.5rem',
             ],
         ],
-        
+
         '& p' => [
             'font-size' => '1.25rem',
             'color' => 'rgba(255, 255, 255, 0.9)',
             'margin-bottom' => '2rem',
             'line-height' => '1.8',
-            
+
             '@media (max-width: 768px)' => [
                 'font-size' => '1rem',
             ],
         ],
-        
+
         '& .cta-button' => [
             'background' => 'white',
             'color' => '#667eea',
@@ -157,12 +157,12 @@ $StyledHero = styled('section', [
             'font-weight' => 'bold',
             'box-shadow' => '0 4px 15px rgba(0,0,0,0.2)',
             'transition' => 'all 0.3s ease',
-            
+
             '&:hover' => [
                 'transform' => 'translateY(-3px)',
                 'box-shadow' => '0 6px 20px rgba(0,0,0,0.3)',
             ],
-            
+
             '&:active' => [
                 'transform' => 'translateY(-1px)',
             ],
@@ -179,7 +179,7 @@ $StyledCard = styled('div', [
     'transition' => 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     'position' => 'relative',
     'overflow' => 'hidden',
-    
+
     '&::before' => [
         'content' => '""',
         'position' => 'absolute',
@@ -191,16 +191,16 @@ $StyledCard = styled('div', [
         'transform' => 'scaleX(0)',
         'transition' => 'transform 0.3s ease',
     ],
-    
+
     '&:hover' => [
         'transform' => 'translateY(-8px)',
         'box-shadow' => '0 12px 24px rgba(0,0,0,0.15)',
-        
+
         '&::before' => [
             'transform' => 'scaleX(1)',
         ],
     ],
-    
+
     '& .card-icon' => [
         'width' => '60px',
         'height' => '60px',
@@ -212,18 +212,18 @@ $StyledCard = styled('div', [
         'margin-bottom' => '1.5rem',
         'font-size' => '2rem',
         'transition' => 'transform 0.3s ease',
-        
+
         '&:hover' => [
             'transform' => 'rotate(10deg) scale(1.1)',
         ],
     ],
-    
+
     '& .card-title' => [
         'font-size' => '1.5rem',
         'font-weight' => 'bold',
         'margin-bottom' => '1rem',
         'color' => '#333',
-        
+
         '& span' => [
             'background' => 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             'background-clip' => 'text',
@@ -231,41 +231,41 @@ $StyledCard = styled('div', [
             '-webkit-text-fill-color' => 'transparent',
         ],
     ],
-    
+
     '& .card-description' => [
         'color' => '#666',
         'line-height' => '1.8',
         'margin-bottom' => '1.5rem',
-        
+
         '& strong' => [
             'color' => '#333',
             'font-weight' => '600',
         ],
     ],
-    
+
     '& .card-footer' => [
         'display' => 'flex',
         'align-items' => 'center',
         'gap' => '1rem',
         'padding-top' => '1rem',
         'border-top' => '1px solid #eee',
-        
+
         '& .badge' => [
             'padding' => '0.25rem 0.75rem',
             'border-radius' => '20px',
             'font-size' => '0.875rem',
             'font-weight' => '500',
-            
+
             '&.badge-new' => [
                 'background' => '#e8f5e9',
                 'color' => '#2e7d32',
             ],
-            
+
             '&.badge-hot' => [
                 'background' => '#ffebee',
                 'color' => '#c62828',
             ],
-            
+
             '&.badge-pro' => [
                 'background' => '#e3f2fd',
                 'color' => '#1565c0',
@@ -279,14 +279,14 @@ $StyledGrid = styled('div', [
     'max-width' => '1200px',
     'margin' => '4rem auto',
     'padding' => '0 2rem',
-    
+
     '& .section-title' => [
         'text-align' => 'center',
         'font-size' => '2.5rem',
         'font-weight' => 'bold',
         'margin-bottom' => '3rem',
         'color' => '#333',
-        
+
         '&::after' => [
             'content' => '""',
             'display' => 'block',
@@ -297,16 +297,16 @@ $StyledGrid = styled('div', [
             'border-radius' => '2px',
         ],
     ],
-    
+
     '& .grid' => [
         'display' => 'grid',
         'grid-template-columns' => 'repeat(3, 1fr)',
         'gap' => '2rem',
-        
+
         '@media (max-width: 1024px)' => [
             'grid-template-columns' => 'repeat(2, 1fr)',
         ],
-        
+
         '@media (max-width: 768px)' => [
             'grid-template-columns' => '1fr',
             'gap' => '1.5rem',
@@ -318,22 +318,22 @@ $StyledGrid = styled('div', [
 $StyledStats = styled('section', [
     'background' => '#f8f9fa',
     'padding' => '4rem 2rem',
-    
+
     '& .stats-container' => [
         'max-width' => '1200px',
         'margin' => '0 auto',
         'display' => 'grid',
         'grid-template-columns' => 'repeat(4, 1fr)',
         'gap' => '2rem',
-        
+
         '@media (max-width: 768px)' => [
             'grid-template-columns' => 'repeat(2, 1fr)',
         ],
-        
+
         '@media (max-width: 480px)' => [
             'grid-template-columns' => '1fr',
         ],
-        
+
         '& .stat-item' => [
             'text-align' => 'center',
             'padding' => '2rem',
@@ -341,15 +341,15 @@ $StyledStats = styled('section', [
             'border-radius' => '12px',
             'box-shadow' => '0 2px 8px rgba(0,0,0,0.05)',
             'transition' => 'transform 0.3s ease',
-            
+
             '&:hover' => [
                 'transform' => 'scale(1.05)',
-                
+
                 '& .stat-number' => [
                     'transform' => 'scale(1.1)',
                 ],
             ],
-            
+
             '& .stat-number' => [
                 'font-size' => '3rem',
                 'font-weight' => 'bold',
@@ -360,7 +360,7 @@ $StyledStats = styled('section', [
                 'margin-bottom' => '0.5rem',
                 'transition' => 'transform 0.3s ease',
             ],
-            
+
             '& .stat-label' => [
                 'color' => '#666',
                 'font-size' => '1rem',
@@ -376,7 +376,7 @@ $StyledFooter = styled('footer', [
     'background' => '#2c3e50',
     'color' => 'white',
     'padding' => '3rem 2rem 1rem',
-    
+
     '& .footer-content' => [
         'max-width' => '1200px',
         'margin' => '0 auto',
@@ -384,15 +384,15 @@ $StyledFooter = styled('footer', [
         'grid-template-columns' => 'repeat(4, 1fr)',
         'gap' => '2rem',
         'margin-bottom' => '2rem',
-        
+
         '@media (max-width: 768px)' => [
             'grid-template-columns' => 'repeat(2, 1fr)',
         ],
-        
+
         '@media (max-width: 480px)' => [
             'grid-template-columns' => '1fr',
         ],
-        
+
         '& .footer-section' => [
             '& h3' => [
                 'margin-bottom' => '1rem',
@@ -401,19 +401,19 @@ $StyledFooter = styled('footer', [
                 'padding-bottom' => '0.5rem',
                 'display' => 'inline-block',
             ],
-            
+
             '& ul' => [
                 'list-style' => 'none',
                 'padding' => '0',
-                
+
                 '& li' => [
                     'margin-bottom' => '0.5rem',
-                    
+
                     '& a' => [
                         'color' => '#bdc3c7',
                         'text-decoration' => 'none',
                         'transition' => 'color 0.3s ease',
-                        
+
                         '&:hover' => [
                             'color' => '#667eea',
                             'padding-left' => '5px',
@@ -423,7 +423,7 @@ $StyledFooter = styled('footer', [
             ],
         ],
     ],
-    
+
     '& .footer-bottom' => [
         'text-align' => 'center',
         'padding-top' => '2rem',
@@ -442,7 +442,7 @@ $page = _html('lang="en"', [
         _meta(['name' => 'viewport', 'content' => 'width=device-width, initial-scale=1.0']),
         _title(['IceDOM - Complex Styled Components Demo']),
         _styles(), // Output all collected CSS
-        _style([_safe(<<<CSS
+        _style([_safe(<<<'CSS'
             * { box-sizing: border-box; }
             body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
             @keyframes pulse {
@@ -451,7 +451,7 @@ $page = _html('lang="en"', [
             }
         CSS)]),
     ]),
-    
+
     _body([
         // Navigation
         $StyledNav(['class' => 'main-nav'], [
@@ -465,7 +465,7 @@ $page = _html('lang="en"', [
                 ]),
             ]),
         ]),
-        
+
         // Hero Section
         $StyledHero(['class' => 'hero'], [
             _div(['class' => 'hero-content'], [
@@ -474,7 +474,7 @@ $page = _html('lang="en"', [
                 _button(['class' => 'cta-button'], ['Get Started →']),
             ]),
         ]),
-        
+
         // Stats Section
         $StyledStats(['id' => 'stats'], [
             _div(['class' => 'stats-container'], [
@@ -496,7 +496,7 @@ $page = _html('lang="en"', [
                 ]),
             ]),
         ]),
-        
+
         // Features Grid
         $StyledGrid(['id' => 'features'], [
             _h2(['class' => 'section-title'], ['Powerful Features']),
@@ -513,7 +513,7 @@ $page = _html('lang="en"', [
                         _span(['class' => 'badge badge-new'], ['New']),
                     ]),
                 ]),
-                
+
                 $StyledCard([
                     _div(['class' => 'card-icon'], ['📱']),
                     _div(['class' => 'card-title'], [_span(['Media Queries'])]),
@@ -526,7 +526,7 @@ $page = _html('lang="en"', [
                         _span(['class' => 'badge badge-hot'], ['Hot']),
                     ]),
                 ]),
-                
+
                 $StyledCard([
                     _div(['class' => 'card-icon'], ['🎯']),
                     _div(['class' => 'card-title'], [_span(['Deep Nesting'])]),
@@ -539,7 +539,7 @@ $page = _html('lang="en"', [
                         _span(['class' => 'badge badge-pro'], ['Pro']),
                     ]),
                 ]),
-                
+
                 $StyledCard([
                     _div(['class' => 'card-icon'], ['⚡']),
                     _div(['class' => 'card-title'], [_span(['Performance'])]),
@@ -550,7 +550,7 @@ $page = _html('lang="en"', [
                         _span(['class' => 'badge badge-new'], ['Fast']),
                     ]),
                 ]),
-                
+
                 $StyledCard([
                     _div(['class' => 'card-icon'], ['🔧']),
                     _div(['class' => 'card-title'], [_span(['Pure PHP'])]),
@@ -561,7 +561,7 @@ $page = _html('lang="en"', [
                         _span(['class' => 'badge badge-pro'], ['Simple']),
                     ]),
                 ]),
-                
+
                 $StyledCard([
                     _div(['class' => 'card-icon'], ['✅']),
                     _div(['class' => 'card-title'], [_span(['Well Tested'])]),
@@ -576,7 +576,7 @@ $page = _html('lang="en"', [
                 ]),
             ]),
         ]),
-        
+
         // Footer
         $StyledFooter([
             _div(['class' => 'footer-content'], [

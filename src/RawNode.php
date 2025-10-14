@@ -43,8 +43,8 @@ namespace IceTea\IceDOM;
  * $raw2 = new RawNode([fn() => 'test']); // Outputs: Closure object string
  * ```
  *
- * @package IceTea\IceDOM
  * @author IceTea Team
+ *
  * @see Node Base class with HTML escaping and type handling
  * @see SafeStringable For marking individual strings as safe within normal Nodes
  * @see EchoNode For capturing output buffer content with evaluation

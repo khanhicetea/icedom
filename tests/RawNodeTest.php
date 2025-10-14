@@ -412,7 +412,7 @@ describe('RawNode', function () {
     describe('Comparison with Base Node Class', function () {
         it('does not add spaces between children unlike base Node', function () {
             $rawNode = new RawNode(['Hello', 'World']);
-            $baseNode = new class (['Hello', 'World']) extends Node
+            $baseNode = new class(['Hello', 'World']) extends Node
             {
                 public function __toString()
                 {
@@ -426,7 +426,7 @@ describe('RawNode', function () {
 
         it('does not escape HTML unlike base Node', function () {
             $rawNode = new RawNode(['<script>alert("xss")</script>']);
-            $baseNode = new class (['<script>alert("xss")</script>']) extends Node
+            $baseNode = new class(['<script>alert("xss")</script>']) extends Node
             {
                 public function __toString()
                 {
@@ -551,4 +551,3 @@ describe('RawNode', function () {
         });
     });
 });
-

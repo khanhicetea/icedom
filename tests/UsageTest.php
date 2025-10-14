@@ -62,7 +62,7 @@ describe('Invoke Syntax', function () {
     test('array initialization for children', function () {
         $result = _ul('class="menu"', [
             _li(['Item 1']),
-            _li(['Item 2'])
+            _li(['Item 2']),
         ]);
         expect((string) $result)->toBe('<ul class="menu"><li>Item 1</li><li>Item 2</li></ul>');
     });
@@ -71,12 +71,12 @@ describe('Invoke Syntax', function () {
         $result = _ul('class="menu"')
             ->title('List title')
             ->data_status('collapsed');
-        
+
         $result(
             _li(['Item 1']),
             _li(['Item 2'])
         );
-        
+
         $output = (string) $result;
         expect($output)->toContain('class="menu"');
         expect($output)->toContain('title="List title"');
@@ -105,9 +105,9 @@ describe('HTML Elements', function () {
         $result = _ul('class="menu"', [
             _li(['Home']),
             _li(['About']),
-            _li(['Contact'])
+            _li(['Contact']),
         ]);
-        
+
         $output = (string) $result;
         expect($output)->toContain('class="menu"');
         expect($output)->toContain('<li>Home</li>');
@@ -121,7 +121,7 @@ describe('HTML Elements', function () {
             _li(['Second step']),
             _li(['Third step'])
         );
-        
+
         $output = (string) $result;
         expect($output)->toContain('class="steps"');
         expect($output)->toContain('<li>First step</li>');
@@ -131,11 +131,11 @@ describe('HTML Elements', function () {
         $result = _form(['action' => '/login', 'method' => 'post'], [
             _div(['class' => 'form-group'], [
                 _label(['for' => 'email'], ['Email:']),
-                _input(['type' => 'email', 'id' => 'email', 'name' => 'email', 'required' => true])
+                _input(['type' => 'email', 'id' => 'email', 'name' => 'email', 'required' => true]),
             ]),
-            _button(['type' => 'submit', 'class' => 'btn-primary'], ['Login'])
+            _button(['type' => 'submit', 'class' => 'btn-primary'], ['Login']),
         ]);
-        
+
         $output = (string) $result;
         expect($output)->toContain('action="/login"');
         expect($output)->toContain('method="post"');
@@ -149,18 +149,18 @@ describe('HTML Elements', function () {
                 _tr([
                     _th(['Name']),
                     _th(['Age']),
-                    _th(['Email'])
-                ])
+                    _th(['Email']),
+                ]),
             ]),
             _tbody([
                 _tr([
                     _td(['John']),
                     _td(['30']),
-                    _td(['john@example.com'])
-                ])
-            ])
+                    _td(['john@example.com']),
+                ]),
+            ]),
         ]);
-        
+
         $output = (string) $result;
         expect($output)->toContain('<table class="data-table">');
         expect($output)->toContain('<thead>');
@@ -171,16 +171,16 @@ describe('HTML Elements', function () {
     test('void elements', function () {
         expect((string) _br())->toBe('<br>');
         expect((string) _hr())->toBe('<hr>');
-        
+
         $img = _img(['src' => 'photo.jpg', 'alt' => 'Description']);
         expect((string) $img)->toBe('<img src="photo.jpg" alt="Description">');
     });
 
     test('semantic HTML', function () {
         $result = _header(['class' => 'site-header'], [
-            _nav(['class' => 'main-nav'], ['Navigation'])
+            _nav(['class' => 'main-nav'], ['Navigation']),
         ]);
-        
+
         $output = (string) $result;
         expect($output)->toContain('<header class="site-header">');
         expect($output)->toContain('<nav class="main-nav">');
@@ -191,7 +191,7 @@ describe('Working with Attributes', function () {
     test('setting attributes via array', function () {
         $div = _div(['id' => 'main', 'class' => 'container'], ['Content']);
         $output = (string) $div;
-        
+
         expect($output)->toContain('id="main"');
         expect($output)->toContain('class="container"');
         expect($output)->toContain('Content');
@@ -201,7 +201,7 @@ describe('Working with Attributes', function () {
         $div = _div(['Content']);
         $div->setAttribute('id', 'main');
         $div->setAttribute('class', 'container');
-        
+
         $output = (string) $div;
         expect($output)->toContain('id="main"');
         expect($output)->toContain('class="container"');
@@ -212,7 +212,7 @@ describe('Working with Attributes', function () {
         $div->id('main');
         $div->data_role('primary');
         $div->aria_label('Content');
-        
+
         $output = (string) $div;
         expect($output)->toContain('id="main"');
         expect($output)->toContain('data-role="primary"');
@@ -222,10 +222,10 @@ describe('Working with Attributes', function () {
     test('boolean attributes', function () {
         $checked = _input(['type' => 'checkbox', 'checked' => true]);
         expect((string) $checked)->toContain('checked');
-        
+
         $unchecked = _input(['type' => 'checkbox', 'checked' => false]);
         expect((string) $unchecked)->not->toContain('checked');
-        
+
         $disabled = _button(['disabled' => true], ['Save']);
         expect((string) $disabled)->toContain('disabled');
     });
@@ -234,7 +234,7 @@ describe('Working with Attributes', function () {
         $input = _input(['type' => 'checkbox']);
         $input->checked();
         $input->required();
-        
+
         $output = (string) $input;
         expect($output)->toContain('checked');
         expect($output)->toContain('required');
@@ -243,14 +243,14 @@ describe('Working with Attributes', function () {
     test('CSS classes - single class', function () {
         $div = _div();
         $div->classes('active');
-        
+
         expect((string) $div)->toContain('class="active"');
     });
 
     test('CSS classes - multiple classes', function () {
         $div = _div();
         $div->classes('btn', 'btn-primary', 'btn-lg');
-        
+
         $output = (string) $div;
         expect($output)->toContain('btn');
         expect($output)->toContain('btn-primary');
@@ -263,9 +263,9 @@ describe('Working with Attributes', function () {
             'active' => true,
             'disabled' => false,
             'primary' => true,
-            'secondary' => false
+            'secondary' => false,
         ]);
-        
+
         $output = (string) $div;
         expect($output)->toContain('active');
         expect($output)->toContain('primary');
@@ -276,7 +276,7 @@ describe('Working with Attributes', function () {
     test('shorthand attributes with string', function () {
         $result = _div('data-custom="value" data-count="5"');
         $output = (string) $result;
-        
+
         expect($output)->toContain('data-custom="value"');
         expect($output)->toContain('data-count="5"');
     });
@@ -284,13 +284,13 @@ describe('Working with Attributes', function () {
     test('dynamic attributes with closures', function () {
         $result = _div([
             'class' => 'box',
-            'data-count' => fn($node) => count($node->getChildren())
+            'data-count' => fn ($node) => count($node->getChildren()),
         ], [
             'Child 1',
             'Child 2',
-            'Child 3'
+            'Child 3',
         ]);
-        
+
         $output = (string) $result;
         expect($output)->toContain('data-count="3"');
     });
@@ -299,11 +299,10 @@ describe('Working with Attributes', function () {
 describe('Dynamic Content', function () {
     test('map with simple list', function () {
         $fruits = ['Apple', 'Banana', 'Cherry'];
-        
-        $list = _ul('class="fruit-list"', array_map(fn($fruit) => 
-            _li([$fruit]), $fruits
+
+        $list = _ul('class="fruit-list"', array_map(fn ($fruit) => _li([$fruit]), $fruits
         ));
-        
+
         $output = (string) $list;
         expect($output)->toContain('class="fruit-list"');
         expect($output)->toContain('<li>Apple</li>');
@@ -313,13 +312,13 @@ describe('Dynamic Content', function () {
 
     test('map with index', function () {
         $fruits = ['Apple', 'Banana', 'Cherry'];
-        
+
         $items = [];
         foreach ($fruits as $index => $fruit) {
-            $items[] = _li([_strong([($index + 1) . '. ']), $fruit]);
+            $items[] = _li([_strong([($index + 1).'. ']), $fruit]);
         }
         $list = _ol($items);
-        
+
         $output = (string) $list;
         expect($output)->toContain('<strong>1. </strong>Apple');
         expect($output)->toContain('<strong>2. </strong>Banana');
@@ -336,24 +335,23 @@ describe('Dynamic Content', function () {
             ['name' => 'John', 'email' => 'john@example.com', 'role' => 'Admin'],
             ['name' => 'Jane', 'email' => 'jane@example.com', 'role' => 'User'],
         ];
-        
+
         $table = _table('class="users-table"', [
             _thead([
                 _tr([
                     _th(['Name']),
                     _th(['Email']),
-                    _th(['Role'])
-                ])
+                    _th(['Role']),
+                ]),
             ]),
-            _tbody(array_map(fn($user) => 
-                _tr([
-                    _td([$user['name']]),
-                    _td([$user['email']]),
-                    _td([_span("class=\"badge badge-{$user['role']}\"", [$user['role']])])
-                ]), $users
-            ))
+            _tbody(array_map(fn ($user) => _tr([
+                _td([$user['name']]),
+                _td([$user['email']]),
+                _td([_span("class=\"badge badge-{$user['role']}\"", [$user['role']])]),
+            ]), $users
+            )),
         ]);
-        
+
         $output = (string) $table;
         expect($output)->toContain('<td>John</td>');
         expect($output)->toContain('<td>jane@example.com</td>');
@@ -363,14 +361,14 @@ describe('Dynamic Content', function () {
 
     test('mapping associative arrays', function () {
         $data = ['name' => 'John', 'age' => 30, 'city' => 'NYC'];
-        
+
         $items = [];
         foreach ($data as $key => $value) {
-            $items[] = _dt([ucfirst($key) . ':']);
+            $items[] = _dt([ucfirst($key).':']);
             $items[] = _dd([$value]);
         }
         $dl = _dl($items);
-        
+
         $output = (string) $dl;
         expect($output)->toContain('<dt>Name:</dt>');
         expect($output)->toContain('<dd>John</dd>');
@@ -382,9 +380,9 @@ describe('Dynamic Content', function () {
         $result = _div(['class' => 'card'], [
             'Item 1',
             'Item 2',
-            fn($node) => 'Total items: ' . (count($node->getChildren()) - 1)
+            fn ($node) => 'Total items: '.(count($node->getChildren()) - 1),
         ]);
-        
+
         $output = (string) $result;
         expect($output)->toContain('Item 1');
         expect($output)->toContain('Item 2');
@@ -396,36 +394,36 @@ describe('Conditional Rendering', function () {
     test('basic if/else - true condition', function () {
         $result = _if(true)('Welcome back!')
             ->else('Please login');
-        
+
         expect((string) $result)->toBe('Welcome back!');
     });
 
     test('basic if/else - false condition', function () {
         $result = _if(false)('Welcome back!')
             ->else('Please login');
-        
+
         expect((string) $result)->toBe('Please login');
     });
 
     test('multiple conditions', function () {
         $role = 'moderator';
-        
+
         $result = _if($role === 'admin')('Admin Dashboard')
             ->elseIf($role === 'moderator')('Moderator Panel')
             ->elseIf($role === 'user')('User Dashboard')
             ->else('Guest View');
-        
+
         expect((string) $result)->toBe('Moderator Panel');
     });
 
     test('conditional with HTML elements', function () {
         $status = 'pending';
-        
+
         $statusBadge = _if($status === 'completed')(_span(['class' => 'badge-success'], ['Completed']))
             ->elseIf($status === 'pending')(_span(['class' => 'badge-warning'], ['Pending']))
             ->elseIf($status === 'cancelled')(_span(['class' => 'badge-danger'], ['Cancelled']))
             ->else(_span(['class' => 'badge-secondary'], ['Unknown']));
-        
+
         $output = (string) $statusBadge;
         expect($output)->toContain('badge-warning');
         expect($output)->toContain('Pending');
@@ -434,47 +432,47 @@ describe('Conditional Rendering', function () {
     test('lazy evaluation with closures', function () {
         $isLoggedIn = true;
         $userName = 'Alice';
-        
-        $result = _if(fn() => $isLoggedIn)(fn() => "Welcome, {$userName}")
+
+        $result = _if(fn () => $isLoggedIn)(fn () => "Welcome, {$userName}")
             ->else('Please login');
-        
+
         expect((string) $result)->toBe('Welcome, Alice');
     });
 });
 
 describe('Component Patterns', function () {
     test('reusable button component', function () {
-        $btn = function(string $text, string $variant = 'primary', array $attrs = []) {
+        $btn = function (string $text, string $variant = 'primary', array $attrs = []) {
             $defaultAttrs = [
                 'type' => 'button',
-                'class' => "btn btn-{$variant}"
+                'class' => "btn btn-{$variant}",
             ];
-            
+
             return _button(array_merge($defaultAttrs, $attrs), [$text]);
         };
-        
+
         $button1 = $btn('Click Me');
         expect((string) $button1)->toContain('btn btn-primary');
         expect((string) $button1)->toContain('Click Me');
-        
+
         $button2 = $btn('Delete', 'danger', ['onclick' => 'confirmDelete()']);
         expect((string) $button2)->toContain('btn btn-danger');
         expect((string) $button2)->toContain('onclick="confirmDelete()"');
     });
 
     test('card component', function () {
-        $card = function(string $title, $content, $footer = null) {
+        $card = function (string $title, $content, $footer = null) {
             return _div('class="card"', [
                 _div('class="card-header"', [
-                    _h3('class="card-title"', [$title])
+                    _h3('class="card-title"', [$title]),
                 ]),
                 _div('class="card-body"', [$content]),
-                $footer !== null ? _div('class="card-footer"', [$footer]) : null
+                $footer !== null ? _div('class="card-footer"', [$footer]) : null,
             ]);
         };
-        
+
         $myCard = $card('Welcome', _p(['This is a card component.']), 'Footer text');
-        
+
         $output = (string) $myCard;
         expect($output)->toContain('card-title');
         expect($output)->toContain('Welcome');
@@ -483,54 +481,54 @@ describe('Component Patterns', function () {
     });
 
     test('badge component', function () {
-        $badge = function(string $text, string $variant = 'primary') {
+        $badge = function (string $text, string $variant = 'primary') {
             return _span("class=\"badge badge-{$variant}\"", [$text]);
         };
-        
+
         $badge1 = $badge('New', 'success');
         expect((string) $badge1)->toContain('badge-success');
         expect((string) $badge1)->toContain('New');
-        
+
         $badge2 = $badge('Hot', 'danger');
         expect((string) $badge2)->toContain('badge-danger');
     });
 
     test('alert component', function () {
-        $alert = function(string $message, string $type = 'info', bool $dismissible = false) {
+        $alert = function (string $message, string $type = 'info', bool $dismissible = false) {
             return _div("class=\"alert alert-{$type}\"", [
                 $dismissible ? _button([
                     'type' => 'button',
                     'class' => 'close',
-                    'data-dismiss' => 'alert'
+                    'data-dismiss' => 'alert',
                 ], ['×']) : null,
-                $message
+                $message,
             ]);
         };
-        
+
         $alert1 = $alert('Operation successful!', 'success', true);
         $output1 = (string) $alert1;
         expect($output1)->toContain('alert-success');
         expect($output1)->toContain('data-dismiss="alert"');
-        
+
         $alert2 = $alert('Please fill all fields.', 'warning');
         expect((string) $alert2)->toContain('alert-warning');
     });
 
     test('form field component', function () {
-        $formField = function(string $label, string $name, string $type = 'text', array $attrs = []) {
+        $formField = function (string $label, string $name, string $type = 'text', array $attrs = []) {
             return _div('class="form-group"', [
                 _label(['for' => $name], [$label]),
                 _input(array_merge([
                     'type' => $type,
                     'id' => $name,
                     'name' => $name,
-                    'class' => 'form-control'
-                ], $attrs))
+                    'class' => 'form-control',
+                ], $attrs)),
             ]);
         };
-        
+
         $field = $formField('Email', 'email', 'email', ['required' => true, 'placeholder' => 'you@example.com']);
-        
+
         $output = (string) $field;
         expect($output)->toContain('form-group');
         expect($output)->toContain('for="email"');
@@ -559,25 +557,25 @@ describe('Helper Functions', function () {
     test('clsf conditional class formatter', function () {
         $result1 = clsf('btn-%s btn-%s', 'primary', 'large');
         expect($result1)->toBe('btn-primary btn-large');
-        
+
         $result2 = clsf('btn-%s btn-%s', null, null);
         expect($result2)->toBe('');
-        
+
         $result3 = clsf('btn-%s', 'primary');
         expect($result3)->toBe('btn-primary');
     });
 
     test('_echo captures output buffer', function () {
-        $result = _echo(function() {
-            echo "Hello";
-            echo " World";
+        $result = _echo(function () {
+            echo 'Hello';
+            echo ' World';
         });
-        
+
         expect((string) $result)->toBe('Hello World');
     });
 
     test('_slot with function', function () {
-        $slot = _slot(fn() => 'Dynamic content');
+        $slot = _slot(fn () => 'Dynamic content');
         expect((string) $slot)->toBe('Dynamic content');
     });
 
@@ -595,33 +593,33 @@ describe('Complete Examples', function () {
                 _meta(['charset' => 'UTF-8']),
                 _meta(['name' => 'viewport', 'content' => 'width=device-width, initial-scale=1.0']),
                 _title(['My Website - Home']),
-                _link(['rel' => 'stylesheet', 'href' => '/css/style.css'])
+                _link(['rel' => 'stylesheet', 'href' => '/css/style.css']),
             ]),
-            
+
             _body([
                 _header('class="site-header"', [
                     _nav('class="navbar container"', [
                         _a('href="/" class="logo"', ['MySite']),
                         _ul('class="nav-menu"', [
                             _li([_a(['href' => '/'], ['Home'])]),
-                            _li([_a(['href' => '/about'], ['About'])])
-                        ])
-                    ])
+                            _li([_a(['href' => '/about'], ['About'])]),
+                        ]),
+                    ]),
                 ]),
-                
+
                 _main('class="content container"', [
                     _h1(['Welcome to My Website']),
-                    _p(['This is a complete HTML page built with IceDOM.'])
+                    _p(['This is a complete HTML page built with IceDOM.']),
                 ]),
-                
+
                 _footer('class="site-footer"', [
-                    _p(['© 2024 MySite. All rights reserved.'])
+                    _p(['© 2024 MySite. All rights reserved.']),
                 ]),
-                
-                _script(['src' => '/js/app.js'])
-            ])
+
+                _script(['src' => '/js/app.js']),
+            ]),
         ]);
-        
+
         $output = (string) $page;
         expect($output)->toStartWith('<!DOCTYPE html>');
         expect($output)->toContain('lang="en"');
@@ -635,27 +633,27 @@ describe('Complete Examples', function () {
             ['name' => 'Laptop', 'price' => 999, 'image' => 'laptop.jpg', 'featured' => true],
             ['name' => 'Mouse', 'price' => 29, 'image' => 'mouse.jpg', 'featured' => false],
         ];
-        
-        $grid = _div('class="product-grid"', array_map(function($product) {
+
+        $grid = _div('class="product-grid"', array_map(function ($product) {
             return _div([
                 'class' => 'product-card',
-                'data-product-id' => $product['name']
+                'data-product-id' => $product['name'],
             ], [
                 $product['featured'] ? _span('class="badge-featured"', ['Featured']) : null,
-                    
+
                 _img([
-                    'src' => "/images/{$product['image']}", 
+                    'src' => "/images/{$product['image']}",
                     'alt' => $product['name'],
-                    'class' => 'product-image'
+                    'class' => 'product-image',
                 ]),
-                
+
                 _div('class="product-info"', [
                     _h3('class="product-name"', [$product['name']]),
-                    _p('class="product-price"', ['$' . number_format($product['price'], 2)])
-                ])
+                    _p('class="product-price"', ['$'.number_format($product['price'], 2)]),
+                ]),
             ]);
         }, $products));
-        
+
         $output = (string) $grid;
         expect($output)->toContain('product-grid');
         expect($output)->toContain('data-product-id="Laptop"');
@@ -669,9 +667,9 @@ describe('Complete Examples', function () {
             ['id' => 1, 'name' => 'John Doe', 'email' => 'john@example.com', 'role' => 'Admin', 'active' => true],
             ['id' => 2, 'name' => 'Jane Smith', 'email' => 'jane@example.com', 'role' => 'User', 'active' => false],
         ];
-        
-        $badge = fn($text, $variant) => _span("class=\"badge badge-{$variant}\"", [$text]);
-        
+
+        $badge = fn ($text, $variant) => _span("class=\"badge badge-{$variant}\"", [$text]);
+
         $table = _div('class="table-responsive"', [
             _table('class="table table-striped"', [
                 _thead([
@@ -680,24 +678,24 @@ describe('Complete Examples', function () {
                         _th(['Name']),
                         _th(['Email']),
                         _th(['Role']),
-                        _th(['Status'])
-                    ])
+                        _th(['Status']),
+                    ]),
                 ]),
-                _tbody(array_map(function($user) use ($badge) {
+                _tbody(array_map(function ($user) use ($badge) {
                     $roleClass = $user['role'] === 'Admin' ? 'danger' : 'primary';
                     $statusClass = $user['active'] ? 'success' : 'secondary';
-                    
+
                     return _tr([
                         _td([$user['id']]),
                         _td([$user['name']]),
                         _td([$user['email']]),
                         _td([$badge($user['role'], $roleClass)]),
-                        _td([$badge($user['active'] ? 'Active' : 'Inactive', $statusClass)])
+                        _td([$badge($user['active'] ? 'Active' : 'Inactive', $statusClass)]),
                     ]);
-                }, $users))
-            ])
+                }, $users)),
+            ]),
         ]);
-        
+
         $output = (string) $table;
         expect($output)->toContain('table-responsive');
         expect($output)->toContain('John Doe');
@@ -709,15 +707,15 @@ describe('Complete Examples', function () {
     test('registration form with validation', function () {
         $errors = [
             'email' => 'Email is already registered',
-            'password' => null
+            'password' => null,
         ];
-        
+
         $form = _form(['action' => '/register', 'method' => 'post', 'class' => 'registration-form'], [
             _h2(['Create Account']),
-            
+
             // Email field
             _div([
-                'class' => 'form-group' . (isset($errors['email']) ? ' has-error' : '')
+                'class' => 'form-group'.(isset($errors['email']) ? ' has-error' : ''),
             ], [
                 _label(['for' => 'email'], ['Email Address']),
                 _input([
@@ -725,11 +723,11 @@ describe('Complete Examples', function () {
                     'id' => 'email',
                     'name' => 'email',
                     'class' => 'form-control',
-                    'required' => true
+                    'required' => true,
                 ]),
-                isset($errors['email']) ? _span('class="error-message"', [$errors['email']]) : null
+                isset($errors['email']) ? _span('class="error-message"', [$errors['email']]) : null,
             ]),
-            
+
             // Password field
             _div('class="form-group"', [
                 _label(['for' => 'password'], ['Password']),
@@ -739,12 +737,12 @@ describe('Complete Examples', function () {
                     'name' => 'password',
                     'class' => 'form-control',
                     'minlength' => 8,
-                    'required' => true
+                    'required' => true,
                 ]),
-                _small('class="form-text"', ['Must be at least 8 characters'])
-            ])
+                _small('class="form-text"', ['Must be at least 8 characters']),
+            ]),
         ]);
-        
+
         $output = (string) $form;
         expect($output)->toContain('registration-form');
         expect($output)->toContain('Create Account');
@@ -759,10 +757,9 @@ describe('Method Chaining', function () {
     test('fluent method chaining', function () {
         $result = _div()
             ->id('container')
-            ->classes('active', 'shadow')
-            ('Content here')
+            ->classes('active', 'shadow')('Content here')
             ->setAttribute('data-role', 'main');
-        
+
         $output = (string) $result;
         expect($output)->toContain('id="container"');
         expect($output)->toContain('active');
@@ -777,11 +774,11 @@ describe('Best Practices Validation', function () {
         // Correct way - empty args then invoke
         $correct1 = _div()('child1', 'child2', 'child3');
         expect((string) $correct1)->toBe('<div>child1child2child3</div>');
-        
+
         // Correct way - list array
         $correct2 = _div(['child1', 'child2', 'child3']);
         expect((string) $correct2)->toBe('<div>child1child2child3</div>');
-        
+
         // Correct way - string + children array
         $correct3 = _div('class="box"', ['child1', 'child2']);
         $output = (string) $correct3;
@@ -793,12 +790,12 @@ describe('Best Practices Validation', function () {
         // Correct way - string for raw attributes + methods
         $correct1 = _div('class="container" data-show="1"')
             ->setAttribute('align', 'left');
-        
+
         $output = (string) $correct1;
         expect($output)->toContain('class="container"');
         expect($output)->toContain('data-show="1"');
         expect($output)->toContain('align="left"');
-        
+
         // Correct way - associative array only
         $correct2 = _div(['class' => 'container', 'data-show' => '1', 'align' => 'left']);
         $output2 = (string) $correct2;
@@ -807,4 +804,3 @@ describe('Best Practices Validation', function () {
         expect($output2)->toContain('align="left"');
     });
 });
-

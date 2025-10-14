@@ -42,7 +42,6 @@ use function intval;
  * $div = div()->id((string) $ref1); // <div id="_1a2b3c">
  * ```
  *
- * @package IceTea\IceDOM
  * @author IceTea Team
  */
 class HtmlRef
@@ -75,10 +74,10 @@ class HtmlRef
      * - Cast to int for counter base
      * - Subsequent instances just increment from there
      *
-     * @param string $ref Optional custom reference identifier.
-     *                    - Non-empty string: Used directly as the reference
-     *                    - Empty string (default): Auto-generates _{base36_counter}
-     *                    - Custom values not validated (ensure they're valid HTML IDs if needed)
+     * @param  string  $ref  Optional custom reference identifier.
+     *                       - Non-empty string: Used directly as the reference
+     *                       - Empty string (default): Auto-generates _{base36_counter}
+     *                       - Custom values not validated (ensure they're valid HTML IDs if needed)
      */
     public function __construct(private string $ref = '')
     {

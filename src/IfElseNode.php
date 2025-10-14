@@ -45,8 +45,8 @@ use function count;
  * // Renders based on which condition is true
  * ```
  *
- * @package IceTea\IceDOM
  * @author IceTea Team
+ *
  * @see Node Base class for children rendering
  * @see SlotNode For simpler dynamic/fallback content
  */
@@ -90,15 +90,15 @@ class IfElseNode extends Node
      * 3. Adds children to the first condition block
      * 4. Sets else children if provided
      *
-     * @param array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null> $children Initial children for the first (if) condition block.
-     *                                                                                             Rendered if first condition is true.
-     * @param array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null> $elseChildren Children for the else block (no condition).
-     *                                                                                               Rendered if all conditions are false.
-     * @param bool|Closure|mixed $condition The first condition to evaluate.
-     *                                      - bool: Direct true/false value
-     *                                      - Closure: Lazy-evaluated function returning truthy/falsy
-     *                                      - Other: Any value evaluated for truthiness
-     *                                      - null: Always falsy (useful for placeholder logic)
+     * @param  array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null>  $children  Initial children for the first (if) condition block.
+     *                                                                                                  Rendered if first condition is true.
+     * @param  array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null>  $elseChildren  Children for the else block (no condition).
+     *                                                                                                      Rendered if all conditions are false.
+     * @param  bool|Closure|mixed  $condition  The first condition to evaluate.
+     *                                         - bool: Direct true/false value
+     *                                         - Closure: Lazy-evaluated function returning truthy/falsy
+     *                                         - Other: Any value evaluated for truthiness
+     *                                         - null: Always falsy (useful for placeholder logic)
      */
     public function __construct(
         array $children = [],
@@ -107,19 +107,19 @@ class IfElseNode extends Node
     ) {
         parent::__construct([]);
         $this->pushCondition($condition);
-        
+
         // Add initial children to the first condition block
         foreach ($children as $child) {
             if (! isset($this->children[$this->conditionIdx])) {
                 $this->children[$this->conditionIdx] = [];
             }
             $this->children[$this->conditionIdx][] = $child;
-            
+
             if ($child instanceof Node) {
                 $child->setParent($this);
             }
         }
-        
+
         $this->else(...$elseChildren);
     }
 
@@ -129,10 +129,10 @@ class IfElseNode extends Node
      * Internal method called by constructor and elseif(). Increments the condition
      * index to track which condition block is currently active.
      *
-     * @param bool|Closure|mixed $condition The condition to add.
-     *                                      - Evaluated during __toString() via tryEvalClosure()
-     *                                      - Closures evaluated with this node as parameter
-     *                                      - All values tested for truthiness
+     * @param  bool|Closure|mixed  $condition  The condition to add.
+     *                                         - Evaluated during __toString() via tryEvalClosure()
+     *                                         - Closures evaluated with this node as parameter
+     *                                         - All values tested for truthiness
      * @return void
      */
     public function pushCondition($condition)
@@ -147,9 +147,9 @@ class IfElseNode extends Node
      * Else children are rendered only when all conditions evaluate to false.
      * Can be called multiple times to append more else children.
      *
-     * @param Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null ...$children Content for else block.
-     *                                                                                         Each child type handled as per Node rules.
-     *                                                                                         Node children get parent set to this IfElseNode.
+     * @param  Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null  ...$children  Content for else block.
+     *                                                                                              Each child type handled as per Node rules.
+     *                                                                                              Node children get parent set to this IfElseNode.
      * @return static Returns $this for method chaining
      */
     public function else(...$children): static
@@ -176,10 +176,10 @@ class IfElseNode extends Node
      * $node->elseif($condition)(['children', 'for', 'this', 'condition']);
      * ```
      *
-     * @param bool|Closure|mixed $condition The condition to evaluate.
-     *                                      - bool: Direct boolean value
-     *                                      - Closure: Lazy-evaluated, receives this node as parameter
-     *                                      - Other: Evaluated for truthiness
+     * @param  bool|Closure|mixed  $condition  The condition to evaluate.
+     *                                         - bool: Direct boolean value
+     *                                         - Closure: Lazy-evaluated, receives this node as parameter
+     *                                         - Other: Evaluated for truthiness
      * @return static Returns $this for method chaining (enables ->(...$children) call)
      */
     public function elseif($condition): static
@@ -203,10 +203,11 @@ class IfElseNode extends Node
      *     ->else('Else content');
      * ```
      *
-     * @param Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null ...$children Content for current condition block.
-     *                                                                                         Added to children array at current conditionIdx.
-     *                                                                                         Node children get parent reference set.
+     * @param  Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null  ...$children  Content for current condition block.
+     *                                                                                              Added to children array at current conditionIdx.
+     *                                                                                              Node children get parent reference set.
      * @return static Returns $this for method chaining
+     *
      * @throws Exception If called after else() has been invoked (elseChildren not empty)
      */
     public function __invoke(...$children): static

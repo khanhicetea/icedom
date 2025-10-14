@@ -1,12 +1,12 @@
 <?php
 
-use IceTea\IceDOM\HtmlNode;
-use IceTea\IceDOM\HtmlDocument;
-use IceTea\IceDOM\SafeString;
-use IceTea\IceDOM\RawNode;
-use IceTea\IceDOM\SlotNode;
-use IceTea\IceDOM\IfElseNode;
 use IceTea\IceDOM\EchoNode;
+use IceTea\IceDOM\HtmlDocument;
+use IceTea\IceDOM\HtmlNode;
+use IceTea\IceDOM\IfElseNode;
+use IceTea\IceDOM\RawNode;
+use IceTea\IceDOM\SafeString;
+use IceTea\IceDOM\SlotNode;
 
 describe('Generated HTML Tag Functions', function () {
 
@@ -656,4 +656,3 @@ describe('Generated HTML Tag Functions', function () {
         });
     });
 });
-
