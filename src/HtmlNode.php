@@ -108,7 +108,7 @@ class HtmlNode extends Node
      * Constructor validates tag name and initializes the HTML element structure.
      * Void elements cannot have children (enforced by appendChild override).
      *
-     * @param array<Node|Closure|string|int|float|SafeString|Stringable|ArrayMap|null> $children Child content for the element.
+     * @param array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null> $children Child content for the element.
      *                                                                                            Empty for void elements.
      * @param string|null $tagName The HTML tag name (required).
      *                              - string: Tag name like 'div', 'span', 'input'
@@ -174,7 +174,7 @@ class HtmlNode extends Node
      *                             - array: Attributes (associative) or children (list)
      *                             - null: Ignore, use $children parameter
      *                             - Other: Single child to wrap
-     * @param array<Node|Closure|string|int|float|SafeString|Stringable|ArrayMap|null>|null $children Child nodes when $firstArgument is string/attributes/null.
+     * @param array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null>|null $children Child nodes when $firstArgument is string/attributes/null.
      *                                                                                                 - null: No children
      *                                                                                                 - array: Child nodes
      * @param bool $isVoid Whether this is a void/self-closing element
@@ -223,7 +223,7 @@ class HtmlNode extends Node
      * Void elements (br, img, input, etc.) cannot have children and will throw
      * an exception if you attempt to add children to them.
      *
-     * @param Node|Closure|string|int|float|SafeString|Stringable|ArrayMap|null $child The child content to add.
+     * @param Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null $child The child content to add.
      *                                                                                   See Node::appendChild() for type details.
      * @return static Returns $this for method chaining
      * @throws \Exception If attempting to add children to a void element

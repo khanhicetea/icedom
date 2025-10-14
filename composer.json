@@ -36,6 +36,7 @@
         }
     },
     "scripts": {
+        "devzone": "php -S localhost:8000 drafts/devzone/index.php",
         "test": "XDEBUG_MODE=coverage vendor/bin/pest",
         "test-coverage": "XDEBUG_MODE=coverage vendor/bin/pest --coverage",
         "format": "vendor/bin/pint",

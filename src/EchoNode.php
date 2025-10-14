@@ -65,7 +65,7 @@ class EchoNode extends Node
      *
      * Type handling after evaluation:
      * - Node: Converted to string via __toString() and echoed
-     * - SafeString: Converted to string and echoed without escaping
+     * - SafeStringable: Converted to string and echoed without escaping
      * - string: Echoed directly without escaping
      * - int|float: Echoed directly as numeric output
      * - Stringable: Converted via __toString() and echoed
@@ -83,7 +83,7 @@ class EchoNode extends Node
 
             if ($evaluatedChild instanceof Node) {
                 echo $evaluatedChild->__toString();
-            } elseif ($evaluatedChild instanceof SafeString) {
+            } elseif ($evaluatedChild instanceof SafeStringable) {
                 echo $evaluatedChild->__toString();
             } elseif (is_string($evaluatedChild)) {
                 echo $evaluatedChild;

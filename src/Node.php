@@ -21,8 +21,8 @@ use function implode;
  *
  * Core Features:
  * - Tree structure management with parent-child relationships
- * - Mixed content type support (Node, string, int, float, Closure, Stringable, SafeString)
- * - Automatic HTML escaping for security (except SafeString and numeric types)
+ * - Mixed content type support (Node, string, int, float, Closure, Stringable, SafeStringable)
+ * - Automatic HTML escaping for security (except SafeStringable and numeric types)
  * - Lazy evaluation through Closure support
  * - Fluent/chainable API for building complex structures
  * - Functional programming utilities (use, childrenUse, map)
@@ -32,7 +32,7 @@ use function implode;
  * - string: HTML-escaped for XSS protection
  * - int/float: Output directly without escaping
  * - Closure: Evaluated lazily with parent node as parameter
- * - SafeString: Output without escaping (for pre-sanitized content)
+ * - SafeStringable: Output without escaping (for pre-sanitized content)
  * - Stringable: Converted to string then HTML-escaped
  * - null: Ignored and not rendered
  *
@@ -66,14 +66,14 @@ class Node
      * - Closure: Evaluated with parent as parameter, result processed
      * - string: HTML-escaped using htmlspecialchars() for XSS protection
      * - int|float: Cast to string without escaping
-     * - SafeString: Output directly without escaping (trusted content)
+     * - SafeStringable: Output directly without escaping (trusted content)
      * - Stringable: Converted via __toString() then HTML-escaped
      * - null: Skipped during rendering
      *
      * Order: Children maintain insertion order and are rendered sequentially.
      * Spacing: Children are concatenated without separators (no spaces).
      *
-     * @var array<Node|Closure|string|int|float|SafeString|Stringable|ArrayMap|null>
+     * @var array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null>
      */
     protected array $children = [];
 
@@ -83,11 +83,11 @@ class Node
      * All provided children are added via appendChildren(), which handles
      * parent relationship setting for Node instances.
      *
-     * @param array<Node|Closure|string|int|float|SafeString|Stringable|ArrayMap|null> $children Initial child content.
+     * @param array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null> $children Initial child content.
      *                                                                                             - Node: Child nodes with parent set automatically
      *                                                                                             - Closure: Lazy-evaluated content
      *                                                                                             - string/int/float: Direct content
-     *                                                                                             - SafeString: Pre-sanitized HTML content
+     *                                                                                             - SafeStringable: Pre-sanitized HTML content
      *                                                                                             - Stringable: Objects with __toString()
      *                                                                                             - ArrayMap: Iterable mapping utility
      *                                                                                             - null: Ignored
@@ -221,12 +221,12 @@ class Node
      * - null values are ignored (no-op)
      * - All other types are stored and processed during __toString()
      *
-     * @param Node|Closure|string|int|float|SafeString|Stringable|ArrayMap|null $child The content to add.
+     * @param Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null $child The content to add.
      *                                                                                   - Node: Another DOM node, parent set automatically
      *                                                                                   - Closure: Lazy-evaluated function, called with parent during render
      *                                                                                   - string: Text content, HTML-escaped during render
      *                                                                                   - int|float: Numeric content, not escaped
-     *                                                                                   - SafeString: Pre-sanitized HTML, not escaped
+     *                                                                                   - SafeStringable: Pre-sanitized HTML, not escaped
      *                                                                                   - Stringable: Object with __toString(), escaped during render
      *                                                                                   - ArrayMap: Iterable mapper, rendered during __toString()
      *                                                                                   - null: Ignored, no action taken
@@ -251,7 +251,7 @@ class Node
      * Convenience method that iterates the array and calls appendChild()
      * for each element, ensuring consistent handling of all content types.
      *
-     * @param array<Node|Closure|string|int|float|SafeString|Stringable|ArrayMap|null> $children Array of content to add.
+     * @param array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null> $children Array of content to add.
      *                                                                                             Each element handled according to appendChild() rules.
      *                                                                                             See appendChild() documentation for type-specific behavior.
      * @return static Returns $this for method chaining
@@ -323,7 +323,7 @@ class Node
      * in PHP 7+, but modifying it directly is not recommended. Use appendChild()
      * and clearChildren() for proper manipulation.
      *
-     * @return array<Node|Closure|string|int|float|SafeString|Stringable|ArrayMap|null> Array of all child content
+     * @return array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null> Array of all child content
      */
     public function getChildren(): array
     {
@@ -339,13 +339,13 @@ class Node
      *
      * Processing rules by type:
      * 1. Closure: Evaluated first with parent node as parameter, then result processed
-     * 2. Node|SafeString: __toString() called, output not escaped
+     * 2. Node|SafeStringable: __toString() called, output not escaped
      * 3. string: HTML-escaped using htmlspecialchars()
      * 4. int|float: Cast to string without escaping
      * 5. Stringable: __toString() called, then HTML-escaped
      * 6. null: Skipped, no output
      *
-     * Security: All string content is escaped except SafeString and numeric types.
+     * Security: All string content is escaped except SafeStringable and numeric types.
      * Concatenation: Children joined without separators (empty string join).
      *
      * @return string The rendered content of all children, empty string if no children
@@ -362,7 +362,7 @@ class Node
                 $child = $child($this);
             }
 
-            if ($child instanceof Node || $child instanceof SafeString) {
+            if ($child instanceof Node || $child instanceof SafeStringable) {
                 $strArr[] = $child->__toString();
             } elseif (is_string($child)) {
                 $strArr[] = htmlspecialchars($child, static::ENT_FLAGS);

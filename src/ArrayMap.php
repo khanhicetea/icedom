@@ -26,7 +26,7 @@ use function is_callable;
  * @package IceTea\IceDOM
  * @author IceTea Team
  */
-class ArrayMap implements Stringable
+class ArrayMap implements SafeStringable
 {
     /**
      * The iterable data source to be mapped and rendered.

@@ -12,10 +12,10 @@ namespace IceTea\IceDOM;
  * already been properly escaped and should be rendered as-is.
  *
  * How It Works:
- * - When Node.childrenToString() encounters a SafeString, it outputs the content
+ * - When Node.childrenToString() encounters a SafeStringable, it outputs the content
  *   directly without passing it through htmlspecialchars()
  * - Regular strings are escaped for XSS protection
- * - SafeString bypasses this escaping
+ * - SafeStringable bypasses this escaping
  *
  * Use Cases:
  * - Rendering pre-sanitized HTML from a trusted sanitization library
@@ -34,28 +34,28 @@ namespace IceTea\IceDOM;
  * ```php
  * $node = new Node([
  *     '<script>alert("XSS")</script>',  // Escaped: &lt;script&gt;...
- *     new SafeString('<em>Safe HTML</em>'),  // Not escaped: <em>Safe HTML</em>
+ *     new SafeStringable('<em>Safe HTML</em>'),  // Not escaped: <em>Safe HTML</em>
  * ]);
  * ```
  *
- * @package IceTea\IceDOM
  * @author IceTea Team
- * @see Node::childrenToString() Where SafeString exemption is applied
+ *
+ * @see Node::childrenToString() Where SafeStringable exemption is applied
  * @see RawNode For rendering entire subtrees without escaping
  */
-class SafeString
+class SafeString implements SafeStringable
 {
     /**
-     * Creates a new SafeString wrapper for trusted content.
+     * Creates a new SafeStringable wrapper for trusted content.
      *
      * Warning: Only wrap content that is genuinely safe. This constructor does
      * not perform any sanitization - it simply marks the string for unescaped output.
      *
-     * @param string $value The pre-sanitized/trusted string content to wrap.
-     *                      - HTML markup: Will be rendered as-is without escaping
-     *                      - Entities: Will not be double-encoded (e.g., &amp; stays as &amp;)
-     *                      - Scripts/tags: Will execute/render if present (security risk!)
-     *                      - Empty string: Default, produces no output
+     * @param  string  $value  The pre-sanitized/trusted string content to wrap.
+     *                         - HTML markup: Will be rendered as-is without escaping
+     *                         - Entities: Will not be double-encoded (e.g., &amp; stays as &amp;)
+     *                         - Scripts/tags: Will execute/render if present (security risk!)
+     *                         - Empty string: Default, produces no output
      */
     public function __construct(
         protected string $value = ''
@@ -64,8 +64,8 @@ class SafeString
     /**
      * Returns the wrapped string value without modification.
      *
-     * This magic method is called when SafeString is used in string context.
-     * The Node class checks for SafeString instances and outputs this value
+     * This magic method is called when SafeStringable is used in string context.
+     * The Node class checks for SafeStringable instances and outputs this value
      * directly without HTML escaping.
      *
      * @return string The unescaped string value exactly as stored

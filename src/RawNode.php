@@ -32,7 +32,7 @@ namespace IceTea\IceDOM;
  * Security Warning:
  * Using RawNode with user-provided or untrusted content creates XSS vulnerabilities.
  * Only use with pre-sanitized, trusted, or static content. For individual safe
- * strings within a normal Node tree, use SafeString instead.
+ * strings within a normal Node tree, use SafeStringable instead.
  *
  * Example:
  * ```php
@@ -46,7 +46,7 @@ namespace IceTea\IceDOM;
  * @package IceTea\IceDOM
  * @author IceTea Team
  * @see Node Base class with HTML escaping and type handling
- * @see SafeString For marking individual strings as safe within normal Nodes
+ * @see SafeStringable For marking individual strings as safe within normal Nodes
  * @see EchoNode For capturing output buffer content with evaluation
  */
 class RawNode extends Node

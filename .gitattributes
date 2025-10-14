@@ -8,6 +8,7 @@
 /phpunit.xml.dist export-ignore
 /psalm.xml.dist export-ignore
 /tests export-ignore
+/drafts export-ignore
 /.editorconfig export-ignore
 /.php-cs-fixer.dist.php export-ignore
 /art export-ignore

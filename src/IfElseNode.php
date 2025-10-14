@@ -67,7 +67,7 @@ class IfElseNode extends Node
     /**
      * Children to render when no conditions evaluate to true (else block).
      *
-     * @var array<Node|Closure|string|int|float|SafeString|Stringable|ArrayMap|null> Fallback content
+     * @var array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null> Fallback content
      */
     protected $elseChildren = [];
 
@@ -90,9 +90,9 @@ class IfElseNode extends Node
      * 3. Adds children to the first condition block
      * 4. Sets else children if provided
      *
-     * @param array<Node|Closure|string|int|float|SafeString|Stringable|ArrayMap|null> $children Initial children for the first (if) condition block.
+     * @param array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null> $children Initial children for the first (if) condition block.
      *                                                                                             Rendered if first condition is true.
-     * @param array<Node|Closure|string|int|float|SafeString|Stringable|ArrayMap|null> $elseChildren Children for the else block (no condition).
+     * @param array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null> $elseChildren Children for the else block (no condition).
      *                                                                                               Rendered if all conditions are false.
      * @param bool|Closure|mixed $condition The first condition to evaluate.
      *                                      - bool: Direct true/false value
@@ -147,7 +147,7 @@ class IfElseNode extends Node
      * Else children are rendered only when all conditions evaluate to false.
      * Can be called multiple times to append more else children.
      *
-     * @param Node|Closure|string|int|float|SafeString|Stringable|ArrayMap|null ...$children Content for else block.
+     * @param Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null ...$children Content for else block.
      *                                                                                         Each child type handled as per Node rules.
      *                                                                                         Node children get parent set to this IfElseNode.
      * @return static Returns $this for method chaining
@@ -203,7 +203,7 @@ class IfElseNode extends Node
      *     ->else('Else content');
      * ```
      *
-     * @param Node|Closure|string|int|float|SafeString|Stringable|ArrayMap|null ...$children Content for current condition block.
+     * @param Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null ...$children Content for current condition block.
      *                                                                                         Added to children array at current conditionIdx.
      *                                                                                         Node children get parent reference set.
      * @return static Returns $this for method chaining
