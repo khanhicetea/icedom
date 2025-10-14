@@ -2,6 +2,48 @@
 
 namespace IceTea\IceDOM;
 
+/**
+ * HtmlAttributeMethods - Trait providing fluent setter methods for standard HTML attributes.
+ *
+ * Responsibility:
+ * This trait provides convenient, type-safe setter methods for all common HTML attributes.
+ * Each method sets the corresponding attribute on the HTML element and returns $this for
+ * method chaining. The trait is designed to be used with HtmlNode to provide IDE autocomplete
+ * and a fluent interface for attribute setting.
+ *
+ * Method Pattern:
+ * - Value attributes: public function attrName($value): static
+ * - Boolean attributes: public function attrName($value = true): static
+ *
+ * Boolean Attributes:
+ * Methods like checked(), disabled(), required() default to true when called without arguments.
+ * Pass false explicitly to remove the boolean attribute.
+ *
+ * Usage:
+ * ```php
+ * $input = input()
+ *     ->type('text')
+ *     ->id('username')
+ *     ->name('user')
+ *     ->required()           // Boolean: defaults to true
+ *     ->placeholder('Enter username')
+ *     ->maxlength(50);
+ * ```
+ *
+ * Implementation Note:
+ * This file is auto-generated. All methods follow the same pattern:
+ * $this->attrs['attribute-name'] = $value;
+ * return $this;
+ *
+ * Hyphenated Attributes:
+ * Methods use camelCase which is converted to hyphenated attribute names:
+ * - acceptCharset() sets 'accept-charset'
+ * - httpEquiv() sets 'http-equiv'
+ *
+ * @package IceTea\IceDOM
+ * @author IceTea Team
+ * @see HtmlNode The class that uses this trait
+ */
 trait HtmlAttributeMethods
 {
     // GENERATED

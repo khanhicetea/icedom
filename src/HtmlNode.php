@@ -14,53 +14,114 @@ use function is_string;
 use function str_replace;
 
 /**
- * Represents an HTML element node with attributes and children.
+ * HtmlNode - Represents an HTML element with attributes, children, and fluent API.
  *
- * This class provides a fluent interface for building HTML elements programmatically,
- * supporting attribute manipulation, class management, and HTML generation.
+ * Responsibility:
+ * This class extends Node to provide HTML-specific functionality including tag names,
+ * attributes (both normal and boolean), CSS class management, and proper HTML rendering.
+ * It handles void elements (self-closing tags), attribute escaping, and provides a fluent
+ * interface for building HTML elements programmatically with type safety.
+ *
+ * Key Features:
+ * - HTML tag name and attribute management
+ * - Boolean attribute handling (checked, disabled, etc.)
+ * - Void element support (br, img, input, etc.)
+ * - CSS class manipulation with conditional syntax
+ * - Attribute methods via HtmlAttributeMethods trait
+ * - Factory method for flexible instantiation
+ * - HTML-safe attribute escaping
+ *
+ * Attribute Types:
+ * 1. Boolean attributes: Presence-based (disabled, checked, selected, etc.)
+ * 2. Value attributes: Key="value" format (id, class, href, etc.)
+ * 3. Special '_' attribute: Raw unquoted content in opening tag
+ * 4. Closure attributes: Evaluated dynamically during rendering
+ *
+ * Example:
+ * ```php
+ * $div = new HtmlNode(['Hello'], 'div', ['id' => 'main', 'class' => 'container']);
+ * $div->setAttribute('data-value', 123);
+ * echo $div; // <div id="main" class="container" data-value="123">Hello</div>
+ *
+ * $input = new HtmlNode([], 'input', ['type' => 'checkbox'], true);
+ * $input->checked(true);
+ * echo $input; // <input type="checkbox" checked>
+ * ```
+ *
+ * @package IceTea\IceDOM
+ * @author IceTea Team
+ * @see Node Base class for tree structure and children
+ * @see HtmlAttributeMethods Trait providing attribute setter methods
  */
 class HtmlNode extends Node
 {
     use HtmlAttributeMethods;
 
     /**
-     * List of HTML attributes that are boolean (presence-based rather than value-based).
+     * HTML boolean attributes that are rendered as presence-based.
      *
-     * @var array<string>
+     * These attributes don't require values - their presence indicates true,
+     * absence indicates false. Rendered as just the attribute name when true.
+     *
+     * @var array<string> List of boolean attribute names
      */
     public const BOOLEAN_ATTRS = ['allowfullscreen', 'async', 'autofocus', 'autoplay', 'checked', 'controls', 'default', 'defer', 'disabled', 'formnovalidate', 'hidden', 'ismap', 'itemscope', 'loop', 'multiple', 'muted', 'nomodule', 'novalidate', 'open', 'readonly', 'required', 'reversed', 'selected'];
 
     /**
-     * List of HTML void elements that cannot have children.
+     * HTML void elements that cannot contain children (self-closing tags).
      *
-     * @var array<string>
+     * These elements don't have closing tags and throw exceptions if children
+     * are added to them.
+     *
+     * @var array<string> List of void tag names
      */
     public const VOID_TAGS = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
 
     /**
      * The HTML tag name for this element.
+     *
+     * @var string Tag name (e.g., 'div', 'span', 'input')
      */
     protected string $tagName;
 
     /**
-     * Array of HTML attributes for this element.
+     * Associative array of HTML attributes for this element.
      *
-     * @var array<string, mixed>
+     * Special keys:
+     * - '_': Raw content in opening tag (unquoted)
+     * - Other keys: Rendered as key="value" or key (for boolean attrs)
+     *
+     * @var array<string, mixed> Attribute name => value pairs
      */
     protected array $attrs = [];
 
     /**
-     * Whether this is a void element (cannot have children).
+     * Indicates if this is a void element (self-closing tag).
+     *
+     * @var bool True for void elements (no closing tag, no children allowed)
      */
     protected bool $isVoid = false;
 
     /**
-     * Create a new HtmlNode instance.
+     * Create a new HtmlNode instance with tag name, attributes, and children.
      *
-     * @param  array<Node|scalar>  $children  Array of child nodes or scalar values
-     * @param  string|null  $tagName  The HTML tag name
-     * @param  array<string, mixed>  $attrs  Array of HTML attributes
-     * @param  bool  $isVoid  Whether this is a void element
+     * Constructor validates tag name and initializes the HTML element structure.
+     * Void elements cannot have children (enforced by appendChild override).
+     *
+     * @param array<Node|Closure|string|int|float|SafeString|Stringable|ArrayMap|null> $children Child content for the element.
+     *                                                                                            Empty for void elements.
+     * @param string|null $tagName The HTML tag name (required).
+     *                              - string: Tag name like 'div', 'span', 'input'
+     *                              - null: Throws exception (tag name is mandatory)
+     * @param array<string, mixed> $attrs Initial HTML attributes.
+     *                                    - Standard attributes: ['id' => 'main', 'class' => 'btn']
+     *                                    - Boolean attributes: ['disabled' => true]
+     *                                    - '_' key: Raw content in opening tag
+     *                                    - Closure values: Evaluated during rendering
+     * @param bool $isVoid Whether this is a void/self-closing element.
+     *                     - true: No closing tag, appendChild throws exception
+     *                     - false: Normal element with closing tag
+     * @throws \Exception If tagName is null or empty string
      */
     public function __construct(
         array $children = [],
@@ -79,20 +140,45 @@ class HtmlNode extends Node
     }
 
     /**
-     * Factory method to create an HTML element with flexible argument handling.
+     * Factory method to create HTML elements with flexible argument patterns.
      *
-     * This method provides a convenient way to create HTML elements with various
-     * argument combinations:
-     * - If $firstArgument is string: treated as inner text content
-     * - If $firstArgument is array: treated as attributes (if associative) or children (if list)
-     * - If $firstArgument is null: uses $children as the children array
-     * - Otherwise: $firstArgument is wrapped as a single child
+     * Provides multiple ways to construct HTML elements based on the first argument type,
+     * enabling concise syntax for common patterns. This is the recommended way to create
+     * HTML elements when using the library's helper functions.
      *
-     * @param  string  $tagName  The HTML tag name
-     * @param  mixed  $firstArgument  Either attributes array, content string, or child node
-     * @param  array<Node|scalar>|null  $children  Array of child nodes or scalar values
-     * @param  bool  $isVoid  Whether this is a void element
-     * @return static New HtmlNode instance
+     * Argument handling by type:
+     * 1. String $firstArgument: Treated as '_' attribute (inner text), $children used for child nodes
+     * 2. Associative array: Treated as attributes, $children used for child nodes
+     * 3. List array: Treated as children (ignore $children parameter)
+     * 4. null + array $children: Use $children as children
+     * 5. Other types: Wrap $firstArgument as single child
+     *
+     * Examples:
+     * ```php
+     * // String as text content
+     * HtmlNode::tag('div', 'Hello', []) // <div _="Hello"></div>
+     *
+     * // Attributes + children
+     * HtmlNode::tag('div', ['class' => 'btn'], [$child]) // <div class="btn">$child</div>
+     *
+     * // List as children
+     * HtmlNode::tag('ul', [$li1, $li2], null) // <ul>$li1$li2</ul>
+     *
+     * // Null + children
+     * HtmlNode::tag('div', null, [$child]) // <div>$child</div>
+     * ```
+     *
+     * @param string $tagName The HTML tag name (div, span, etc.)
+     * @param mixed $firstArgument Flexible first parameter:
+     *                             - string: Used as '_' attribute (text content)
+     *                             - array: Attributes (associative) or children (list)
+     *                             - null: Ignore, use $children parameter
+     *                             - Other: Single child to wrap
+     * @param array<Node|Closure|string|int|float|SafeString|Stringable|ArrayMap|null>|null $children Child nodes when $firstArgument is string/attributes/null.
+     *                                                                                                 - null: No children
+     *                                                                                                 - array: Child nodes
+     * @param bool $isVoid Whether this is a void/self-closing element
+     * @return static New HtmlNode instance with configured tag, attributes, and children
      */
     public static function tag(string $tagName, mixed $firstArgument, ?array $children, bool $isVoid = false): static
     {
@@ -131,15 +217,16 @@ class HtmlNode extends Node
     }
 
     /**
-     * Adds a single child to this node.
+     * Adds a single child to this HTML element.
      *
-     * This method accepts various content types and handles them appropriately.
-     * Node instances will have their parent reference set automatically.
-     * Null values are ignored and do not affect the node.
+     * Overrides parent appendChild() to enforce void element restrictions.
+     * Void elements (br, img, input, etc.) cannot have children and will throw
+     * an exception if you attempt to add children to them.
      *
-     * @param  Node|Closure|string|int|float|SafeString|Stringable|null  $child
-     *                                                                           The child content to add
+     * @param Node|Closure|string|int|float|SafeString|Stringable|ArrayMap|null $child The child content to add.
+     *                                                                                   See Node::appendChild() for type details.
      * @return static Returns $this for method chaining
+     * @throws \Exception If attempting to add children to a void element
      */
     public function appendChild($child): static
     {
@@ -151,15 +238,31 @@ class HtmlNode extends Node
     }
 
     /**
-     * Convert the attributes array to an HTML attribute string.
+     * Converts attributes array to HTML attribute string for rendering.
      *
-     * Handles various attribute types:
-     * - Boolean attributes: presence-based (disabled, checked, etc.)
-     * - String attributes: key="value" format with proper escaping
-     * - Closure attributes: evaluated with current node as context
-     * - Special '_' attribute: raw text content (for class shorthand, etc.)
+     * Processes each attribute according to its type and name, applying proper
+     * escaping and formatting. Called internally by __toString() to generate
+     * the attributes portion of the opening tag.
      *
-     * @return string HTML attributes string (empty string if no attributes)
+     * Attribute processing rules:
+     * 1. '_' key: Output as raw unquoted content (e.g., attr="_value" => " _value")
+     * 2. Closure values: Evaluated with this node as parameter first
+     * 3. Boolean attrs with false: Skipped (not rendered)
+     * 4. Boolean attrs with true/truthy: Rendered as just attribute name
+     * 5. Other values: Rendered as key="escapedValue"
+     * 6. null values: Skipped (not rendered)
+     *
+     * Escaping:
+     * - Both keys and values are escaped using htmlspecialchars()
+     * - Uses ENT_FLAGS (ENT_QUOTES | ENT_HTML5)
+     *
+     * Output format:
+     * - Each attribute prefixed with space
+     * - Boolean: " attrname"
+     * - Value: " key=\"value\""
+     * - Special: " rawcontent"
+     *
+     * @return string Space-prefixed attribute string, empty if no attributes
      */
     protected function attributesToString(): string
     {
@@ -199,11 +302,15 @@ class HtmlNode extends Node
     }
 
     /**
-     * Set an HTML attribute value.
+     * Sets an HTML attribute value.
      *
-     * @param  string  $key  The attribute name
-     * @param  mixed  $value  The attribute value
-     * @return static Returns self for method chaining
+     * @param string $key The attribute name (e.g., 'id', 'class', 'data-value')
+     * @param mixed $value The attribute value.
+     *                     - string/int/float: Rendered as key="value"
+     *                     - bool: For boolean attrs, true renders as just key, false skips
+     *                     - Closure: Evaluated during rendering
+     *                     - null: Attribute not rendered
+     * @return static Returns $this for method chaining
      */
     public function setAttribute($key, $value): static
     {
@@ -213,11 +320,11 @@ class HtmlNode extends Node
     }
 
     /**
-     * Get an HTML attribute value.
+     * Gets an HTML attribute value.
      *
-     * @param  string  $key  The attribute name
-     * @param  mixed  $default  Default value if attribute doesn't exist
-     * @return mixed The attribute value or default
+     * @param string $key The attribute name to retrieve
+     * @param mixed $default Default value returned if attribute doesn't exist
+     * @return mixed The attribute value if set, otherwise $default
      */
     public function getAttribute($key, $default = null)
     {
@@ -225,14 +332,20 @@ class HtmlNode extends Node
     }
 
     /**
-     * Magic method to handle dynamic attribute setting.
+     * Magic method for dynamic attribute setting via method calls.
      *
-     * Allows setting attributes using method calls like $node->href('#link')
-     * Converts underscores to hyphens for HTML attribute compatibility.
+     * Allows setting attributes using method syntax instead of setAttribute().
+     * Automatically converts underscores to hyphens for hyphenated HTML attributes.
      *
-     * @param  string  $key  The method name (attribute name with underscores)
-     * @param  array  $args  Method arguments (first argument becomes attribute value)
-     * @return static Returns self for method chaining
+     * Example:
+     * ```php
+     * $node->data_value('123'); // Sets data-value="123"
+     * $node->aria_label('Button'); // Sets aria-label="Button"
+     * ```
+     *
+     * @param string $key The method name (becomes attribute name, underscores converted to hyphens)
+     * @param array<mixed> $args Method arguments, first element becomes attribute value
+     * @return static Returns $this for method chaining
      */
     public function __call($key, $args): static
     {
@@ -242,12 +355,18 @@ class HtmlNode extends Node
     }
 
     /**
-     * Magic method to handle dynamic attribute getting.
+     * Magic method for dynamic attribute getting via property access.
      *
-     * Allows getting attributes using property access like $node->href
-     * Converts underscores to hyphens for HTML attribute compatibility.
+     * Allows reading attributes using property syntax instead of getAttribute().
+     * Automatically converts underscores to hyphens for hyphenated HTML attributes.
      *
-     * @param  string  $key  The property name (attribute name with underscores)
+     * Example:
+     * ```php
+     * $value = $node->data_value; // Gets data-value attribute
+     * $label = $node->aria_label; // Gets aria-label attribute
+     * ```
+     *
+     * @param string $key The property name (becomes attribute name, underscores converted to hyphens)
      * @return mixed The attribute value or null if not set
      */
     public function __get($key)
@@ -258,10 +377,12 @@ class HtmlNode extends Node
     }
 
     /**
-     * Set the HTML id attribute.
+     * Sets the HTML id attribute.
      *
-     * @param  string  $id  The id value
-     * @return static Returns self for method chaining
+     * Convenience method for setting the id attribute (equivalent to setAttribute('id', $id)).
+     *
+     * @param string $id The unique identifier for this element
+     * @return static Returns $this for method chaining
      */
     public function id($id): static
     {
@@ -269,20 +390,30 @@ class HtmlNode extends Node
     }
 
     /**
-     * Set CSS classes with flexible argument handling.
+     * Sets CSS classes with flexible syntax supporting conditionals.
      *
-     * Accepts multiple argument types:
-     * - String: class name to add
-     * - Array: associative [class => condition] or indexed list of class names
-     * - Multiple arguments: combines all provided classes
+     * Accepts multiple patterns for specifying classes:
+     * - Simple strings: Added as class names
+     * - List arrays: All elements added as class names
+     * - Associative arrays: Keys are class names, values are conditions (boolean)
+     * - Multiple arguments: Combined into single class string
+     *
+     * The method merges all patterns and generates a space-separated class attribute
+     * containing only the classes whose conditions evaluated to true.
      *
      * Examples:
-     * $node->classes('active', 'large')
-     * $node->classes(['active' => $isActive, 'large' => true])
-     * $node->classes(['primary', 'secondary'])
+     * ```php
+     * $node->classes('btn', 'btn-primary'); // class="btn btn-primary"
+     * $node->classes(['active' => $isActive, 'disabled' => false]); // class="active" (if $isActive true)
+     * $node->classes(['btn', 'primary'], 'large'); // class="btn primary large"
+     * ```
      *
-     * @param  array<string|bool>|string|null  ...$args  Class names or conditional arrays
-     * @return static Returns self for method chaining
+     * @param array<string|bool>|string|null ...$args Variable class specifications.
+     *                                                 - string: Class name to add
+     *                                                 - array (list): ['class1', 'class2'] all added
+     *                                                 - array (assoc): ['class' => true/false] conditional
+     *                                                 - null: Ignored
+     * @return static Returns $this for method chaining
      */
     public function classes(array|string|null ...$args): static
     {
@@ -311,12 +442,22 @@ class HtmlNode extends Node
     }
 
     /**
-     * Convert the HTML node to its string representation.
+     * Converts the HTML node to its complete HTML string representation.
      *
-     * Generates the complete HTML markup for this element, including
-     * opening tag, attributes, children, and closing tag (unless void element).
+     * Generates proper HTML markup based on whether this is a void or normal element.
+     * Called automatically when the node is used in string context.
      *
-     * @return string The complete HTML markup
+     * Rendering logic:
+     * - Void elements: <tagName attributes> (no closing tag, no children)
+     * - Normal elements: <tagName attributes>children</tagName>
+     *
+     * Example outputs:
+     * ```php
+     * // Void: <input type="text" disabled>
+     * // Normal: <div id="main" class="container">Hello</div>
+     * ```
+     *
+     * @return string Complete HTML markup for this element
      */
     public function __toString()
     {
@@ -328,16 +469,26 @@ class HtmlNode extends Node
     }
 
     /**
-     * Convert the HTML node to an array representation.
+     * Converts the HTML node to an array representation for serialization.
      *
-     * Returns a structured array containing the node's properties,
-     * with closures evaluated and child nodes recursively converted.
+     * Produces a structured array containing all node properties with closures
+     * evaluated and child HtmlNodes recursively converted. Useful for JSON
+     * serialization, debugging, or state inspection.
      *
-     * @return array<string, mixed> Array representation with keys:
-     *                              - 'children': array of child nodes (converted to arrays if HtmlNode)
-     *                              - 'tagName': the HTML tag name
-     *                              - 'attrs': array of attributes (closures evaluated)
-     *                              - 'isVoid': boolean indicating if this is a void element
+     * Array structure:
+     * - 'tagName': string - The HTML tag name
+     * - 'attrs': array - Attributes with Closures evaluated
+     * - 'children': array - Child nodes (HtmlNodes converted to arrays, others kept as-is)
+     * - 'isVoid': bool - Whether this is a void element
+     *
+     * Example:
+     * ```php
+     * $div = div(['class' => 'btn'], ['Click me']);
+     * $array = $div->toArray();
+     * // ['tagName' => 'div', 'attrs' => ['class' => 'btn'], 'children' => ['Click me'], 'isVoid' => false]
+     * ```
+     *
+     * @return array<string, mixed> Array representation with evaluated closures and recursive child conversion
      */
     public function toArray()
     {

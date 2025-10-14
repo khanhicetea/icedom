@@ -3,65 +3,77 @@
 namespace IceTea\IceDOM;
 
 /**
- * A specialized Node that renders raw, unescaped content directly.
+ * RawNode - Renders children as raw, unprocessed string concatenation.
  *
- * The RawNode class extends the base Node functionality by overriding the
- * __toString() method to output children content without any HTML escaping
- * or processing. It simply concatenates all children as-is.
+ * Responsibility:
+ * This minimal Node extension outputs children exactly as stored in the internal
+ * array without any processing, evaluation, or HTML escaping. It performs simple
+ * string concatenation using PHP's implicit type conversion, bypassing all the
+ * safety and transformation features of the base Node class.
  *
- * Unlike the base Node class which:
- * - HTML-escapes string content for security
- * - Joins children with spaces
- * - Evaluates closures and processes various content types
+ * Key Differences from Node:
+ * - Base Node: Evaluates closures, escapes HTML, processes types individually
+ * - RawNode: Direct implode() on children array, no evaluation or escaping
  *
- * RawNode provides a minimal implementation that:
- * - Outputs children exactly as they exist in the internal array
- * - Performs no HTML escaping
- * - Performs no content type handling
- * - Joins children with empty string (no separators)
+ * What RawNode DOES NOT Do:
+ * - Evaluate closures (stored as Closure objects, converted to string by PHP)
+ * - Recursively render Node children (results in object string representation)
+ * - HTML-escape strings (potential XSS vulnerability)
+ * - Handle types differently (all rely on PHP's implicit __toString())
+ * - Set parent relationships
+ * - Add separators between children
  *
- * This class is useful when you need to output content that is already
- * pre-processed, pre-escaped, or when you want complete control over the
- * raw output without any automatic transformations.
+ * Use Cases:
+ * - Pre-escaped HTML content that should not be double-escaped
+ * - Performance-critical scenarios where content is already safe
+ * - Simple string concatenation without Node overhead
+ * - Building raw content from trusted sources
  *
- * WARNING: Using RawNode with user-provided content can introduce XSS
- * vulnerabilities if the content is not properly sanitized beforehand.
- * Only use RawNode with trusted or pre-escaped content.
+ * Security Warning:
+ * Using RawNode with user-provided or untrusted content creates XSS vulnerabilities.
+ * Only use with pre-sanitized, trusted, or static content. For individual safe
+ * strings within a normal Node tree, use SafeString instead.
  *
- * Example usage:
+ * Example:
  * ```php
  * $rawNode = new RawNode(['<div>', 'Hello World', '</div>']);
- * echo $rawNode; // Output: '<div>Hello World</div>'
+ * echo $rawNode; // Outputs: <div>Hello World</div>
+ *
+ * // Closures are NOT evaluated:
+ * $raw2 = new RawNode([fn() => 'test']); // Outputs: Closure object string
  * ```
  *
- * @see Node The base class with HTML escaping and content processing
- * @see SafeString For marking individual strings as safe from escaping
- * @see EchoNode For capturing output buffer content
+ * @package IceTea\IceDOM
+ * @author IceTea Team
+ * @see Node Base class with HTML escaping and type handling
+ * @see SafeString For marking individual strings as safe within normal Nodes
+ * @see EchoNode For capturing output buffer content with evaluation
  */
 class RawNode extends Node
 {
     /**
-     * Converts the node to its string representation by concatenating children.
+     * Converts node to raw string by directly concatenating children.
      *
-     * This method overrides the parent Node's implementation to provide
-     * minimal, direct concatenation of all children without any processing,
-     * evaluation, or HTML escaping.
+     * Overrides the parent __toString() to bypass all Node processing logic.
+     * Simply calls implode('', $this->children) which:
+     * - Concatenates all children with empty string separator
+     * - Uses PHP's implicit __toString() conversion for objects
+     * - Does NOT evaluate closures (they become "Closure Object")
+     * - Does NOT recursively render Node children properly
+     * - Does NOT escape HTML content
      *
-     * The children array is joined using an empty string separator, meaning
-     * all children are concatenated directly without any spaces or other
-     * delimiters between them.
+     * Behavior by child type:
+     * - string: Output as-is without escaping
+     * - int/float: Converted to string by PHP
+     * - Node: Results in "Object" or class name string (NOT rendered)
+     * - Closure: Results in "Closure Object" string (NOT evaluated)
+     * - Stringable: __toString() called by PHP implicitly
+     * - null: Empty string contribution
      *
-     * NOTE: This method does not:
-     * - Evaluate closures
-     * - Process Node instances
-     * - HTML-escape strings
-     * - Handle different content types
-     * - Add any separators between children
+     * Warning: This is minimal concatenation. Most child types will NOT
+     * render as expected compared to base Node behavior.
      *
-     * All children are output exactly as they exist in the internal array,
-     * relying on PHP's implicit string conversion for non-string types.
-     *
-     * @return string The raw concatenation of all children
+     * @return string Raw concatenation of children using PHP's implicit string conversion
      */
     public function __toString()
     {

@@ -38,7 +38,8 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
-- [KhanhIceTea](https://github.com/khanhicetea)
+- Ideas, Write Core Classes, Review Docs - Tests : [KhanhIceTea](https://github.com/khanhicetea)
+- PHPDocs, Tests : LLMs (because it writes these better and faster than me)
 - [All Contributors](../../contributors)
 
 ## License
