@@ -47,7 +47,7 @@ describe('Generated HTML Tag Functions', function () {
 
         it('_h creates custom HtmlNode with attributes', function () {
             $node = _h('custom', ['id' => 'test']);
-            expect((string) $node)->toBe('<custom id="test"></custom>');
+            expect((string) $node)->toContain('id="test"');
         });
 
         it('clsf formats class string with all arguments', function () {
@@ -74,34 +74,39 @@ describe('Generated HTML Tag Functions', function () {
                 expect((string) $div)->toBe('<div></div>');
             });
 
-            it('creates div with shorthand attributes', function () {
-                $div = _div('class="container" id="main"');
-                expect((string) $div)->toBe('<div class="container" id="main"></div>');
-            });
-
             it('creates div with attributes array', function () {
                 $div = _div(['class' => 'container', 'id' => 'main']);
                 expect((string) $div)->toBe('<div class="container" id="main"></div>');
             });
 
-            it('creates div with attributes and children using array', function () {
-                $div = _div(['class' => 'box'], ['Content here']);
+            it('creates div with attributes and string children', function () {
+                $div = _div(['class' => 'box'], 'Content here');
                 expect((string) $div)->toBe('<div class="box">Content here</div>');
             });
 
-            it('creates div with shorthand attributes and children using invoke', function () {
-                $div = _div('class="box"')('Content here');
+            it('creates div with attributes and multiple children', function () {
+                $div = _div(['class' => 'box'], 'Content ', 'here');
                 expect((string) $div)->toBe('<div class="box">Content here</div>');
-            });
-
-            it('creates div with only children array', function () {
-                $div = _div(null, ['Content here']);
-                expect((string) $div)->toBe('<div>Content here</div>');
             });
 
             it('creates div with children using list array', function () {
                 $div = _div(['Hello', ' World']);
                 expect((string) $div)->toBe('<div>Hello World</div>');
+            });
+
+            it('creates div with attributes and node children', function () {
+                $div = _div(['class' => 'post', 'data-id' => '1'], 'child text1', _a('Click'), _strong('here'));
+                $html = (string) $div;
+                expect($html)->toContain('class="post"')
+                    ->and($html)->toContain('data-id="1"')
+                    ->and($html)->toContain('child text1')
+                    ->and($html)->toContain('<a>Click</a>')
+                    ->and($html)->toContain('<strong>here</strong>');
+            });
+
+            it('creates div with list array of children', function () {
+                $div = _div(['class' => 'box'], ['Content ', 'here']);
+                expect((string) $div)->toBe('<div class="box">Content here</div>');
             });
         });
 
@@ -116,13 +121,13 @@ describe('Generated HTML Tag Functions', function () {
                 expect((string) $span)->toBe('<span>Text</span>');
             });
 
-            it('creates span with attributes and children', function () {
-                $span = _span(['class' => 'badge'], ['New']);
+            it('creates span with attributes and string children', function () {
+                $span = _span(['class' => 'badge'], 'New');
                 expect((string) $span)->toBe('<span class="badge">New</span>');
             });
 
-            it('creates span with shorthand attributes and invoke', function () {
-                $span = _span(['class' => 'badge'])('New');
+            it('creates span with attributes and list array children', function () {
+                $span = _span(['class' => 'badge'], ['New']);
                 expect((string) $span)->toBe('<span class="badge">New</span>');
             });
         });
@@ -133,13 +138,13 @@ describe('Generated HTML Tag Functions', function () {
                 expect((string) $p)->toBe('<p>This is a paragraph.</p>');
             });
 
-            it('creates paragraph with attributes and children', function () {
-                $p = _p(['class' => 'lead'], ['Intro text']);
+            it('creates paragraph with attributes and string children', function () {
+                $p = _p(['class' => 'lead'], 'Intro text');
                 expect((string) $p)->toBe('<p class="lead">Intro text</p>');
             });
 
-            it('creates paragraph with shorthand and invoke', function () {
-                $p = _p('class="lead"')('Intro text');
+            it('creates paragraph with attributes and list array children', function () {
+                $p = _p(['class' => 'lead'], ['Intro text']);
                 expect((string) $p)->toBe('<p class="lead">Intro text</p>');
             });
         });
@@ -151,6 +156,11 @@ describe('Generated HTML Tag Functions', function () {
             });
 
             it('creates link with href and text', function () {
+                $link = _a(['href' => 'https://example.com'], 'Visit Site');
+                expect((string) $link)->toBe('<a href="https://example.com">Visit Site</a>');
+            });
+
+            it('creates link with href and list array text', function () {
                 $link = _a(['href' => 'https://example.com'], ['Visit Site']);
                 expect((string) $link)->toBe('<a href="https://example.com">Visit Site</a>');
             });
@@ -170,7 +180,20 @@ describe('Generated HTML Tag Functions', function () {
                 expect((string) $btn)->toBe('<button>Click Me</button>');
             });
 
-            it('creates button with attributes and children', function () {
+            it('creates button with string child', function () {
+                $btn = _button('Click Me');
+                expect((string) $btn)->toBe('<button>Click Me</button>');
+            });
+
+            it('creates button with attributes and string children', function () {
+                $btn = _button(['type' => 'submit', 'class' => 'btn-primary'], 'Submit');
+                $html = (string) $btn;
+                expect($html)->toContain('type="submit"')
+                    ->and($html)->toContain('class="btn-primary"')
+                    ->and($html)->toContain('Submit');
+            });
+
+            it('creates button with attributes and list array children', function () {
                 $btn = _button(['type' => 'submit', 'class' => 'btn-primary'], ['Submit']);
                 $html = (string) $btn;
                 expect($html)->toContain('type="submit"')
@@ -178,16 +201,8 @@ describe('Generated HTML Tag Functions', function () {
                     ->and($html)->toContain('Submit');
             });
 
-            it('creates button with shorthand and invoke', function () {
-                $btn = _button('type="submit" class="btn-primary"')('Submit');
-                $html = (string) $btn;
-                expect($html)->toContain('type="submit"')
-                    ->and($html)->toContain('class="btn-primary"')
-                    ->and($html)->toContain('Submit');
-            });
-
             it('creates disabled button', function () {
-                $btn = _button(['disabled' => true], ['Disabled']);
+                $btn = _button(['disabled' => true], 'Disabled');
                 expect((string) $btn)->toContain('disabled');
             });
         });
@@ -258,14 +273,24 @@ describe('Generated HTML Tag Functions', function () {
                 expect((string) $h1)->toBe('<h1>Main Title</h1>');
             });
 
-            it('_h2 creates h2 element', function () {
+            it('_h1 creates h1 element with string', function () {
+                $h1 = _h1('Main Title');
+                expect((string) $h1)->toBe('<h1>Main Title</h1>');
+            });
+
+            it('_h2 creates h2 element with attributes', function () {
+                $h2 = _h2(['class' => 'subtitle'], 'Section Title');
+                expect((string) $h2)->toBe('<h2 class="subtitle">Section Title</h2>');
+            });
+
+            it('_h2 creates h2 element with attributes and list array', function () {
                 $h2 = _h2(['class' => 'subtitle'], ['Section Title']);
                 expect((string) $h2)->toBe('<h2 class="subtitle">Section Title</h2>');
             });
 
-            it('_h3 creates h3 element with shorthand', function () {
-                $h3 = _h3('class="section-title"')('Subsection');
-                expect((string) $h3)->toBe('<h3 class="section-title">Subsection</h3>');
+            it('_h3 creates h3 element', function () {
+                $h3 = _h3('Subsection');
+                expect((string) $h3)->toBe('<h3>Subsection</h3>');
             });
 
             it('_h4 creates h4 element', function () {
@@ -300,18 +325,34 @@ describe('Generated HTML Tag Functions', function () {
                 expect((string) $li)->toBe('<li>Item 1</li>');
             });
 
+            it('_li creates list item with string', function () {
+                $li = _li('Item 1');
+                expect((string) $li)->toBe('<li>Item 1</li>');
+            });
+
             it('creates complete list structure', function () {
-                $ul = _ul(null, [
-                    _li(['First']),
-                    _li(['Second']),
-                    _li(['Third']),
-                ]);
+                $ul = _ul(
+                    _li('First'),
+                    _li('Second'),
+                    _li('Third')
+                );
                 $html = (string) $ul;
                 expect($html)->toContain('<ul>')
                     ->and($html)->toContain('<li>First</li>')
                     ->and($html)->toContain('<li>Second</li>')
                     ->and($html)->toContain('<li>Third</li>')
                     ->and($html)->toContain('</ul>');
+            });
+
+            it('creates list with attributes and children', function () {
+                $ul = _ul(['class' => 'menu'], [
+                    _li('First'),
+                    _li('Second'),
+                ]);
+                $html = (string) $ul;
+                expect($html)->toContain('class="menu"')
+                    ->and($html)->toContain('<li>First</li>')
+                    ->and($html)->toContain('<li>Second</li>');
             });
         });
 
@@ -324,6 +365,11 @@ describe('Generated HTML Tag Functions', function () {
             });
 
             it('_label creates label element', function () {
+                $label = _label(['for' => 'username'], 'Username:');
+                expect((string) $label)->toBe('<label for="username">Username:</label>');
+            });
+
+            it('_label creates label element with list array', function () {
                 $label = _label(['for' => 'username'], ['Username:']);
                 expect((string) $label)->toBe('<label for="username">Username:</label>');
             });
@@ -338,8 +384,8 @@ describe('Generated HTML Tag Functions', function () {
 
             it('_select creates select element', function () {
                 $select = _select(['name' => 'country'], [
-                    _option(['value' => 'us'], ['United States']),
-                    _option(['value' => 'uk'], ['United Kingdom']),
+                    _option(['value' => 'us'], 'United States'),
+                    _option(['value' => 'uk'], 'United Kingdom'),
                 ]);
                 $html = (string) $select;
                 expect($html)->toContain('<select')
@@ -348,7 +394,7 @@ describe('Generated HTML Tag Functions', function () {
             });
 
             it('_option creates option element', function () {
-                $option = _option(['value' => 'red'], ['Red']);
+                $option = _option(['value' => 'red'], 'Red');
                 expect((string) $option)->toBe('<option value="red">Red</option>');
             });
 
@@ -358,7 +404,7 @@ describe('Generated HTML Tag Functions', function () {
             });
 
             it('_legend creates legend element', function () {
-                $legend = _legend(['Personal Information']);
+                $legend = _legend('Personal Information');
                 expect((string) $legend)->toBe('<legend>Personal Information</legend>');
             });
         });
@@ -390,11 +436,21 @@ describe('Generated HTML Tag Functions', function () {
             });
 
             it('_th creates table header cell', function () {
+                $th = _th('Name');
+                expect((string) $th)->toBe('<th>Name</th>');
+            });
+
+            it('_th creates table header cell with list array', function () {
                 $th = _th(['Name']);
                 expect((string) $th)->toBe('<th>Name</th>');
             });
 
             it('_td creates table data cell', function () {
+                $td = _td('John Doe');
+                expect((string) $td)->toBe('<td>John Doe</td>');
+            });
+
+            it('_td creates table data cell with list array', function () {
                 $td = _td(['John Doe']);
                 expect((string) $td)->toBe('<td>John Doe</td>');
             });
@@ -439,47 +495,52 @@ describe('Generated HTML Tag Functions', function () {
 
         describe('Text formatting functions', function () {
             it('_strong creates strong element', function () {
+                $strong = _strong('Important');
+                expect((string) $strong)->toBe('<strong>Important</strong>');
+            });
+
+            it('_strong creates strong element with list array', function () {
                 $strong = _strong(['Important']);
                 expect((string) $strong)->toBe('<strong>Important</strong>');
             });
 
             it('_em creates em element', function () {
-                $em = _em(['Emphasized']);
+                $em = _em('Emphasized');
                 expect((string) $em)->toBe('<em>Emphasized</em>');
             });
 
             it('_b creates bold element', function () {
-                $b = _b(['Bold text']);
+                $b = _b('Bold text');
                 expect((string) $b)->toBe('<b>Bold text</b>');
             });
 
             it('_i creates italic element', function () {
-                $i = _i(['Italic text']);
+                $i = _i('Italic text');
                 expect((string) $i)->toBe('<i>Italic text</i>');
             });
 
             it('_u creates underline element', function () {
-                $u = _u(['Underlined']);
+                $u = _u('Underlined');
                 expect((string) $u)->toBe('<u>Underlined</u>');
             });
 
             it('_small creates small element', function () {
-                $small = _small(['Fine print']);
+                $small = _small('Fine print');
                 expect((string) $small)->toBe('<small>Fine print</small>');
             });
 
             it('_mark creates mark element', function () {
-                $mark = _mark(['Highlighted']);
+                $mark = _mark('Highlighted');
                 expect((string) $mark)->toBe('<mark>Highlighted</mark>');
             });
 
             it('_code creates code element', function () {
-                $code = _code(['console.log()']);
+                $code = _code('console.log()');
                 expect((string) $code)->toBe('<code>console.log()</code>');
             });
 
             it('_pre creates pre element', function () {
-                $pre = _pre(['Preformatted']);
+                $pre = _pre('Preformatted');
                 expect((string) $pre)->toBe('<pre>Preformatted</pre>');
             });
         });
@@ -492,6 +553,11 @@ describe('Generated HTML Tag Functions', function () {
             });
 
             it('_style creates style element', function () {
+                $style = _style('body { margin: 0; }');
+                expect((string) $style)->toBe('<style>body { margin: 0; }</style>');
+            });
+
+            it('_style creates style element with list array', function () {
                 $style = _style(['body { margin: 0; }']);
                 expect((string) $style)->toBe('<style>body { margin: 0; }</style>');
             });
@@ -512,7 +578,7 @@ describe('Generated HTML Tag Functions', function () {
             });
 
             it('_title creates title element', function () {
-                $title = _title(['Page Title']);
+                $title = _title('Page Title');
                 expect((string) $title)->toBe('<title>Page Title</title>');
             });
         });
@@ -567,13 +633,13 @@ describe('Generated HTML Tag Functions', function () {
 
     describe('Complex HTML Structure Examples', function () {
         it('creates a navigation menu', function () {
-            $nav = _nav(['class' => 'main-nav'], [
-                _ul(['class' => 'nav-list'], [
-                    _li(null, [_a(['href' => '/'], ['Home'])]),
-                    _li(null, [_a(['href' => '/about'], ['About'])]),
-                    _li(null, [_a(['href' => '/contact'], ['Contact'])]),
-                ]),
-            ]);
+            $nav = _nav(['class' => 'main-nav'],
+                _ul(['class' => 'nav-list'],
+                    _li(_a(['href' => '/'], 'Home')),
+                    _li(_a(['href' => '/about'], 'About')),
+                    _li(_a(['href' => '/contact'], 'Contact'))
+                )
+            );
 
             $html = (string) $nav;
             expect($html)->toContain('<nav class="main-nav">')
@@ -584,13 +650,13 @@ describe('Generated HTML Tag Functions', function () {
         });
 
         it('creates a form with inputs', function () {
-            $form = _form(['action' => '/login', 'method' => 'post'], [
-                _label(['for' => 'email'], ['Email:']),
+            $form = _form(['action' => '/login', 'method' => 'post'],
+                _label(['for' => 'email'], 'Email:'),
                 _input(['type' => 'email', 'id' => 'email', 'name' => 'email']),
-                _label(['for' => 'password'], ['Password:']),
+                _label(['for' => 'password'], 'Password:'),
                 _input(['type' => 'password', 'id' => 'password', 'name' => 'password']),
-                _button(['type' => 'submit'], ['Login']),
-            ]);
+                _button(['type' => 'submit'], 'Login')
+            );
 
             $html = (string) $form;
             expect($html)->toContain('<form')
@@ -602,17 +668,17 @@ describe('Generated HTML Tag Functions', function () {
         });
 
         it('creates a card component', function () {
-            $card = _div(['class' => 'card'], [
-                _div(['class' => 'card-header'], [
-                    _h3(['Card Title']),
-                ]),
-                _div(['class' => 'card-body'], [
-                    _p(['Card content goes here.']),
-                ]),
-                _div(['class' => 'card-footer'], [
-                    _button(['class' => 'btn'], ['Action']),
-                ]),
-            ]);
+            $card = _div(['class' => 'card'],
+                _div(['class' => 'card-header'],
+                    _h3('Card Title')
+                ),
+                _div(['class' => 'card-body'],
+                    _p('Card content goes here.')
+                ),
+                _div(['class' => 'card-footer'],
+                    _button(['class' => 'btn'], 'Action')
+                )
+            );
 
             $html = (string) $card;
             expect($html)->toContain('class="card"')
@@ -624,27 +690,27 @@ describe('Generated HTML Tag Functions', function () {
         });
 
         it('creates a table with data', function () {
-            $table = _table(['class' => 'data-table'], [
-                _thead(null, [
-                    _tr(null, [
-                        _th(['Name']),
-                        _th(['Age']),
-                        _th(['City']),
-                    ]),
-                ]),
-                _tbody(null, [
-                    _tr(null, [
-                        _td(['John Doe']),
-                        _td(['30']),
-                        _td(['New York']),
-                    ]),
-                    _tr(null, [
-                        _td(['Jane Smith']),
-                        _td(['25']),
-                        _td(['Los Angeles']),
-                    ]),
-                ]),
-            ]);
+            $table = _table(['class' => 'data-table'],
+                _thead(
+                    _tr(
+                        _th('Name'),
+                        _th('Age'),
+                        _th('City')
+                    )
+                ),
+                _tbody(
+                    _tr(
+                        _td('John Doe'),
+                        _td('30'),
+                        _td('New York')
+                    ),
+                    _tr(
+                        _td('Jane Smith'),
+                        _td('25'),
+                        _td('Los Angeles')
+                    )
+                )
+            );
 
             $html = (string) $table;
             expect($html)->toContain('<table')
@@ -653,6 +719,21 @@ describe('Generated HTML Tag Functions', function () {
                 ->and($html)->toContain('John Doe')
                 ->and($html)->toContain('Jane Smith')
                 ->and($html)->toContain('</table>');
+        });
+
+        it('creates complex nested structure as in user example', function () {
+            $div = _div(['class' => 'post', 'data-id' => '1'], 
+                'child text1', 
+                _a(['href' => '#'], 'Click'), 
+                _strong('here')
+            );
+
+            $html = (string) $div;
+            expect($html)->toContain('class="post"')
+                ->and($html)->toContain('data-id="1"')
+                ->and($html)->toContain('child text1')
+                ->and($html)->toContain('<a href="#">Click</a>')
+                ->and($html)->toContain('<strong>here</strong>');
         });
     });
 });

@@ -23,8 +23,8 @@ describe('Basic Patterns', function () {
 });
 
 describe('First Argument Patterns', function () {
-    test('scalar string as raw multi attributes', function () {
-        $result = _div('class="container" data-show="1"');
+    test('associative array as attributes', function () {
+        $result = _div(['class' => 'container', 'data-show' => '1']);
         expect((string) $result)->toBe('<div class="container" data-show="1"></div>');
     });
 
@@ -46,13 +46,13 @@ describe('First Argument Patterns', function () {
 });
 
 describe('Invoke Syntax', function () {
-    test('string shorthand for attributes', function () {
-        $result = _div('class="box"')('Hello');
+    test('attributes with invoke syntax', function () {
+        $result = _div(['class' => 'box'])('Hello');
         expect((string) $result)->toBe('<div class="box">Hello</div>');
     });
 
     test('multiple children with invoke', function () {
-        $result = _ul('class="menu"')(
+        $result = _ul(['class' => 'menu'])(
             _li(['Item 1']),
             _li(['Item 2'])
         );
@@ -68,7 +68,7 @@ describe('Invoke Syntax', function () {
     });
 
     test('invoke with chaining methods', function () {
-        $result = _ul('class="menu"')
+        $result = _ul(['class' => 'menu'])
             ->title('List title')
             ->data_status('collapsed');
 
@@ -102,7 +102,7 @@ describe('HTML Escaping', function () {
 
 describe('HTML Elements', function () {
     test('lists with array syntax', function () {
-        $result = _ul('class="menu"', [
+        $result = _ul(['class' => 'menu'], [
             _li(['Home']),
             _li(['About']),
             _li(['Contact']),
@@ -116,7 +116,7 @@ describe('HTML Elements', function () {
     });
 
     test('ordered list with invoke syntax', function () {
-        $result = _ol('class="steps"')(
+        $result = _ol(['class' => 'steps'])(
             _li(['First step']),
             _li(['Second step']),
             _li(['Third step'])
@@ -144,7 +144,7 @@ describe('HTML Elements', function () {
     });
 
     test('table structure', function () {
-        $result = _table('class="data-table"', [
+        $result = _table(['class' => 'data-table'], [
             _thead([
                 _tr([
                     _th(['Name']),
@@ -273,8 +273,8 @@ describe('Working with Attributes', function () {
         expect($output)->not->toContain('secondary');
     });
 
-    test('shorthand attributes with string', function () {
-        $result = _div('data-custom="value" data-count="5"');
+    test('attributes with array syntax', function () {
+        $result = _div(['data-custom' => 'value', 'data-count' => '5']);
         $output = (string) $result;
 
         expect($output)->toContain('data-custom="value"');
@@ -300,7 +300,7 @@ describe('Dynamic Content', function () {
     test('map with simple list', function () {
         $fruits = ['Apple', 'Banana', 'Cherry'];
 
-        $list = _ul('class="fruit-list"', array_map(
+        $list = _ul(['class' => 'fruit-list'], array_map(
             fn($fruit) => _li([$fruit]),
             $fruits
         ));
@@ -338,7 +338,7 @@ describe('Dynamic Content', function () {
             ['name' => 'Jane', 'email' => 'jane@example.com', 'role' => 'User'],
         ];
 
-        $table = _table('class="users-table"', [
+        $table = _table(['class' => 'users-table'], [
             _thead([
                 _tr([
                     _th(['Name']),
@@ -350,7 +350,7 @@ describe('Dynamic Content', function () {
                 fn($user) => _tr([
                     _td([$user['name']]),
                     _td([$user['email']]),
-                    _td([_span("class=\"badge badge-{$user['role']}\"", [$user['role']])]),
+                    _td([_span(['class' => "badge badge-{$user['role']}"], [$user['role']])]),
                 ]),
                 $users
             )),
@@ -466,12 +466,12 @@ describe('Component Patterns', function () {
 
     test('card component', function () {
         $card = function (string $title, $content, $footer = null) {
-            return _div('class="card"', [
-                _div('class="card-header"', [
-                    _h3('class="card-title"', [$title]),
+            return _div(['class' => 'card'], [
+                _div(['class' => 'card-header'], [
+                    _h3(['class' => 'card-title'], [$title]),
                 ]),
-                _div('class="card-body"', [$content]),
-                $footer !== null ? _div('class="card-footer"', [$footer]) : null,
+                _div(['class' => 'card-body'], [$content]),
+                $footer !== null ? _div(['class' => 'card-footer'], [$footer]) : null,
             ]);
         };
 
@@ -486,7 +486,7 @@ describe('Component Patterns', function () {
 
     test('badge component', function () {
         $badge = function (string $text, string $variant = 'primary') {
-            return _span("class=\"badge badge-{$variant}\"", [$text]);
+            return _span(['class' => "badge badge-{$variant}"], [$text]);
         };
 
         $badge1 = $badge('New', 'success');
@@ -499,7 +499,7 @@ describe('Component Patterns', function () {
 
     test('alert component', function () {
         $alert = function (string $message, string $type = 'info', bool $dismissible = false) {
-            return _div("class=\"alert alert-{$type}\"", [
+            return _div(['class' => "alert alert-{$type}"], [
                 $dismissible ? _button([
                     'type' => 'button',
                     'class' => 'close',
@@ -520,7 +520,7 @@ describe('Component Patterns', function () {
 
     test('form field component', function () {
         $formField = function (string $label, string $name, string $type = 'text', array $attrs = []) {
-            return _div('class="form-group"', [
+            return _div(['class' => 'form-group'], [
                 _label(['for' => $name], [$label]),
                 _input(array_merge([
                     'type' => $type,
@@ -592,7 +592,7 @@ describe('Helper Functions', function () {
 
 describe('Complete Examples', function () {
     test('full HTML page structure', function () {
-        $page = _html('lang="en"', [
+        $page = _html(['lang' => 'en'], [
             _head([
                 _meta(['charset' => 'UTF-8']),
                 _meta(['name' => 'viewport', 'content' => 'width=device-width, initial-scale=1.0']),
@@ -601,22 +601,22 @@ describe('Complete Examples', function () {
             ]),
 
             _body([
-                _header('class="site-header"', [
-                    _nav('class="navbar container"', [
-                        _a('href="/" class="logo"', ['MySite']),
-                        _ul('class="nav-menu"', [
+                _header(['class' => 'site-header'], [
+                    _nav(['class' => 'navbar container'], [
+                        _a(['href' => '/', 'class' => 'logo'], ['MySite']),
+                        _ul(['class' => 'nav-menu'], [
                             _li([_a(['href' => '/'], ['Home'])]),
                             _li([_a(['href' => '/about'], ['About'])]),
                         ]),
                     ]),
                 ]),
 
-                _main('class="content container"', [
+                _main(['class' => 'content container'], [
                     _h1(['Welcome to My Website']),
                     _p(['This is a complete HTML page built with IceDOM.']),
                 ]),
 
-                _footer('class="site-footer"', [
+                _footer(['class' => 'site-footer'], [
                     _p(['© 2024 MySite. All rights reserved.']),
                 ]),
 
@@ -638,12 +638,12 @@ describe('Complete Examples', function () {
             ['name' => 'Mouse', 'price' => 29, 'image' => 'mouse.jpg', 'featured' => false],
         ];
 
-        $grid = _div('class="product-grid"', array_map(function ($product) {
+        $grid = _div(['class' => 'product-grid'], array_map(function ($product) {
             return _div([
                 'class' => 'product-card',
                 'data-product-id' => $product['name'],
             ], [
-                $product['featured'] ? _span('class="badge-featured"', ['Featured']) : null,
+                $product['featured'] ? _span(['class' => 'badge-featured'], ['Featured']) : null,
 
                 _img([
                     'src' => "/images/{$product['image']}",
@@ -651,9 +651,9 @@ describe('Complete Examples', function () {
                     'class' => 'product-image',
                 ]),
 
-                _div('class="product-info"', [
-                    _h3('class="product-name"', [$product['name']]),
-                    _p('class="product-price"', ['$' . number_format($product['price'], 2)]),
+                _div(['class' => 'product-info'], [
+                    _h3(['class' => 'product-name'], [$product['name']]),
+                    _p(['class' => 'product-price'], ['$' . number_format($product['price'], 2)]),
                 ]),
             ]);
         }, $products));
@@ -672,10 +672,10 @@ describe('Complete Examples', function () {
             ['id' => 2, 'name' => 'Jane Smith', 'email' => 'jane@example.com', 'role' => 'User', 'active' => false],
         ];
 
-        $badge = fn($text, $variant) => _span("class=\"badge badge-{$variant}\"", [$text]);
+        $badge = fn($text, $variant) => _span(['class' => "badge badge-{$variant}"], [$text]);
 
-        $table = _div('class="table-responsive"', [
-            _table('class="table table-striped"', [
+        $table = _div(['class' => 'table-responsive'], [
+            _table(['class' => 'table table-striped'], [
                 _thead([
                     _tr([
                         _th(['ID']),
@@ -729,11 +729,11 @@ describe('Complete Examples', function () {
                     'class' => 'form-control',
                     'required' => true,
                 ]),
-                isset($errors['email']) ? _span('class="error-message"', [$errors['email']]) : null,
+                isset($errors['email']) ? _span(['class' => 'error-message'], [$errors['email']]) : null,
             ]),
 
             // Password field
-            _div('class="form-group"', [
+            _div(['class' => 'form-group'], [
                 _label(['for' => 'password'], ['Password']),
                 _input([
                     'type' => 'password',
@@ -743,7 +743,7 @@ describe('Complete Examples', function () {
                     'minlength' => 8,
                     'required' => true,
                 ]),
-                _small('class="form-text"', ['Must be at least 8 characters']),
+                _small(['class' => 'form-text'], ['Must be at least 8 characters']),
             ]),
         ]);
 
@@ -783,16 +783,16 @@ describe('Best Practices Validation', function () {
         $correct2 = _div(['child1', 'child2', 'child3']);
         expect((string) $correct2)->toBe('<div>child1child2child3</div>');
 
-        // Correct way - string + children array
-        $correct3 = _div('class="box"', ['child1', 'child2']);
+        // Correct way - attributes + children array
+        $correct3 = _div(['class' => 'box'], ['child1', 'child2']);
         $output = (string) $correct3;
         expect($output)->toContain('class="box"');
         expect($output)->toContain('child1');
     });
 
     test('avoid mixed key array for attributes', function () {
-        // Correct way - string for raw attributes + methods
-        $correct1 = _div('class="container" data-show="1"')
+        // Correct way - attributes array + methods
+        $correct1 = _div(['class' => 'container', 'data-show' => '1'])
             ->setAttribute('align', 'left');
 
         $output = (string) $correct1;

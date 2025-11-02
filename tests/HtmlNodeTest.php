@@ -51,45 +51,58 @@ describe('HtmlNode', function () {
     });
 
     describe('Static tag() Method', function () {
-        it('creates tag with string as inner text', function () {
-            $node = HtmlNode::tag('div', 'Hello World', null);
-            expect((string) $node)->toBe('<div Hello World></div>');
-        });
-
-        it('creates tag with array of children (list)', function () {
-            $node = HtmlNode::tag('ul', ['item1', 'item2'], null);
+        it('creates tag with single list array as children', function () {
+            $node = HtmlNode::tag('ul', [['item1', 'item2']]);
             expect((string) $node)->toBe('<ul>item1item2</ul>');
         });
 
         it('creates tag with associative array as attributes', function () {
-            $node = HtmlNode::tag('a', ['href' => '#link', 'title' => 'Link'], null);
+            $node = HtmlNode::tag('a', [['href' => '#link', 'title' => 'Link']]);
             expect((string) $node)->toBe('<a href="#link" title="Link"></a>');
         });
 
-        it('creates tag with attributes and children', function () {
-            $node = HtmlNode::tag('div', ['class' => 'box'], ['Content']);
+        it('creates tag with attributes and string children', function () {
+            $node = HtmlNode::tag('div', [['class' => 'box'], 'Content']);
             expect((string) $node)->toBe('<div class="box">Content</div>');
         });
 
-        it('creates tag with null firstArgument and children', function () {
-            $node = HtmlNode::tag('p', null, ['Paragraph text']);
-            expect((string) $node)->toBe('<p>Paragraph text</p>');
+        it('creates tag with attributes and multiple children', function () {
+            $node = HtmlNode::tag('div', [['class' => 'box'], 'Hello', ' World']);
+            expect((string) $node)->toBe('<div class="box">Hello World</div>');
         });
 
-        it('creates tag with node as firstArgument', function () {
+        it('creates tag with node children', function () {
             $childNode = new HtmlNode(['Child'], 'span');
-            $node = HtmlNode::tag('div', $childNode, null);
+            $node = HtmlNode::tag('div', [$childNode]);
             expect((string) $node)->toBe('<div><span>Child</span></div>');
         });
 
-        it('handles attributes with index 0 as underscore', function () {
-            $node = HtmlNode::tag('div', [0 => 'inner text', 'class' => 'box'], null);
-            expect((string) $node)->toBe('<div class="box" inner text></div>');
+        it('creates tag with attributes and list array children', function () {
+            $node = HtmlNode::tag('p', [['class' => 'text'], ['Paragraph ', 'text']]);
+            expect((string) $node)->toBe('<p class="text">Paragraph text</p>');
+        });
+
+        it('creates tag with mixed arguments', function () {
+            $span = new HtmlNode(['bold'], 'span');
+            $node = HtmlNode::tag('div', [['class' => 'box'], 'Text ', $span, ' end']);
+            expect((string) $node)->toBe('<div class="box">Text <span>bold</span> end</div>');
         });
 
         it('creates void tag correctly', function () {
-            $node = HtmlNode::tag('input', ['type' => 'text', 'name' => 'username'], null, true);
+            $node = HtmlNode::tag('input', [['type' => 'text', 'name' => 'username']], true);
             expect((string) $node)->toBe('<input type="text" name="username">');
+        });
+
+        it('creates empty tag when args is empty', function () {
+            $node = HtmlNode::tag('div', []);
+            expect((string) $node)->toBe('<div></div>');
+        });
+
+        it('handles multiple attribute arrays by merging', function () {
+            $node = HtmlNode::tag('div', [['class' => 'box'], ['id' => 'main']]);
+            $html = (string) $node;
+            expect($html)->toContain('class="box"')
+                ->and($html)->toContain('id="main"');
         });
     });
 
@@ -259,11 +272,6 @@ describe('HtmlNode', function () {
         it('handles boolean attributes with truthy values', function () {
             $node = new HtmlNode([], 'input', ['required' => 1]);
             expect((string) $node)->toBe('<input required></input>');
-        });
-
-        it('handles underscore attribute as raw text', function () {
-            $node = new HtmlNode([], 'div', ['_' => 'custom-attr']);
-            expect((string) $node)->toBe('<div custom-attr></div>');
         });
 
         it('evaluates closure attributes', function () {
@@ -499,7 +507,7 @@ describe('HtmlNode', function () {
         });
 
         it('creates a link with attributes', function () {
-            $link = HtmlNode::tag('a', ['href' => 'https://example.com', 'target' => '_blank'], ['Visit Example']);
+            $link = HtmlNode::tag('a', [['href' => 'https://example.com', 'target' => '_blank'], 'Visit Example']);
 
             expect((string) $link)->toBe('<a href="https://example.com" target="_blank">Visit Example</a>');
         });

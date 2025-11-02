@@ -34,9 +34,10 @@ function _echo(...$children): EchoNode
 {
     return new EchoNode($children);
 }
-function _h($tagName, $arg = null): IceTea\IceDOM\HtmlNode
+function _h($tagName): IceTea\IceDOM\HtmlNode
 {
-    return IceTea\IceDOM\HtmlNode::tag($tagName, $arg, []);
+    $args = array_slice(func_get_args(), 1);
+    return IceTea\IceDOM\HtmlNode::tag($tagName, $args, false);
 }
 function clsf($format, string|null ...$args) {
     $params = array_map(function ($arg) {
