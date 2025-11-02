@@ -35,9 +35,9 @@ use function IceTea\IceDOM\{_div, _h1, _p, _button};
 
 // Create a simple card
 $card = _div(['class' => 'card'], [
-    _h1(['Welcome to IceDOM']),
-    _p(['Build HTML with PHP, fluently and safely.']),
-    _button(['class' => 'btn-primary'], ['Get Started']),
+    _h1('Welcome to IceDOM'),
+    _p('Build HTML with PHP, fluently and safely.'),
+    _button(['class' => 'btn-primary'], 'Get Started'),
 ]);
 
 echo $card;
@@ -51,53 +51,64 @@ echo $card;
 // Empty element
 _div();
 
-// With children
-_div(['Hello World']);
+// With single text child
+_div('Hello World');
+
+// With children array
+_div(['Hello', ' World']);
 
 // With safe string (won't be HTML-escaped)
-_div([_safe('Hello World')]);
+_div(_safe('Hello World'));
 
-// With attributes and children
-_div(['class' => 'box'], ['Hello']);
+// With attributes and single text child
+_div(['class' => 'box'], 'Hello');
+
+// With attributes and children array
+_div(['class' => 'box'], ['Hello', ' World']);
 ```
 
-### First argument is important
+### First Argument Patterns
 
 ```php
-// First argument is scalar string, it is raw multi attributes string, won't be escaped
-_div('class="container" data-show="1"');
+// First argument is an associative array => attributes
+_div(['class' => 'container', 'data-show' => '1']);
 
-// First argument is list array , numbered key => it becomes array of children
+// First argument is a list array (numbered keys) => array of children
 _div(['hello', $name, ', how are you ?']);
 
-// First argument is mixed key array, first array item become raw multi attributes string, and the rest is array of attributes. (DON'T RECOMMEND THIS WAY)
-_div(['class="container" data-show="1"', 'align' => 'left']);
+// Attributes + multiple child arguments
+_div(['class' => 'box'], 'Hello', ' ', $name);
 
-// NO RECOMMEND null as first arg, try empty args then use invoke or magic call
-_div(null, ['child1', 'child2'])('child3');
+// Attributes + children list array
+_div(['class' => 'box'], ['Hello', ' ', $name]);
+
+// NOT RECOMMENDED: null as first arg, use empty args instead
+// Bad:  _div(null, ['child1', 'child2'])
+// Good: _div(['child1', 'child2'])
+// Good: _div()('child1', 'child2')
 ```
 
 ### Invoke Syntax
 
 ```php
-// String shorthand for attributes
-_div('class="box"')('Hello');
-_div('class="box"')('Hello ', $name);
+// Attributes with invoke for children
+_div(['class' => 'box'])('Hello');
+_div(['class' => 'box'])('Hello ', $name);
 
 // Multiple children with __invoke
-_ul('class="menu"')(
+_ul(['class' => 'menu'])(
     _li(['Item 1']),
     _li(['Item 2'])
 );
 
 // Prefer array initialization for children (faster)
-_ul('class="menu"', [
+_ul(['class' => 'menu'], [
     _li(['Item 1']),
     _li(['Item 2'])
 ]);
 
-// Invoke is preferred when chaining methods (more readable, looks like HTML)
-_ul('class="menu"')
+// Invoke is preferred when chaining methods (more readable)
+_ul(['class' => 'menu'])
     ->title('List title')
     ->data_status('collapsed')
     ->(
@@ -115,7 +126,7 @@ _ul('class="menu"')
 ```php
 $userInput = '<script>alert("xss")</script>';
 
-echo _div([$userInput]);
+echo _div($userInput);
 // Output: <div>&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;</div>
 ```
 
@@ -124,7 +135,7 @@ echo _div([$userInput]);
 ```php
 $trustedHtml = '<strong>Important</strong>';
 
-echo _div([_safe($trustedHtml)]);
+echo _div(_safe($trustedHtml));
 // Output: <div><strong>Important</strong></div>
 ```
 
@@ -135,8 +146,8 @@ echo _div([_safe($trustedHtml)]);
 Every element is a node in a tree:
 
 ```php
-$parent = _div(['Parent content']);
-$child = _span(['Child content']);
+$parent = _div('Parent content');
+$child = _span('Child content');
 
 $parent->appendChild($child);
 
@@ -163,34 +174,34 @@ _div()
 ```php
 // Containers
 _div(['class' => 'container'], [...]);
-_span(['class' => 'badge'], ['New']);
-_p(['Lead paragraph text']);
+_span(['class' => 'badge'], 'New');
+_p('Lead paragraph text');
 
 // Headings
-_h1(['Page Title']);
-_h2(['Section Title']);
-_h3(['Subsection']);
+_h1('Page Title');
+_h2('Section Title');
+_h3('Subsection');
 
 // Links and Buttons
-_a(['href' => '/about', 'target' => '_blank'], ['About Us']);
-_button(['type' => 'submit', 'class' => 'btn'], ['Submit']);
+_a(['href' => '/about', 'target' => '_blank'], 'About Us');
+_button(['type' => 'submit', 'class' => 'btn'], 'Submit');
 ```
 
 ### Lists
 
 ```php
 // Using array syntax (recommended for static lists)
-_ul('class="menu"', [
-    _li(['Home']),
-    _li(['About']),
-    _li(['Contact'])
+_ul(['class' => 'menu'], [
+    _li('Home'),
+    _li('About'),
+    _li('Contact')
 ]);
 
 // Using invoke syntax (recommended when chaining methods)
-_ol('class="steps"')(
-    _li(['First step']),
-    _li(['Second step']),
-    _li(['Third step'])
+_ol(['class' => 'steps'])(
+    _li('First step'),
+    _li('Second step'),
+    _li('Third step')
 );
 ```
 
@@ -199,16 +210,16 @@ _ol('class="steps"')(
 ```php
 _form(['action' => '/login', 'method' => 'post'], [
     _div(['class' => 'form-group'], [
-        _label(['for' => 'email'], ['Email:']),
+        _label(['for' => 'email'], 'Email:'),
         _input(['type' => 'email', 'id' => 'email', 'name' => 'email', 'required' => true])
     ]),
     
     _div(['class' => 'form-group'], [
-        _label(['for' => 'password'], ['Password:']),
+        _label(['for' => 'password'], 'Password:'),
         _input(['type' => 'password', 'id' => 'password', 'name' => 'password', 'required' => true])
     ]),
     
-    _button(['type' => 'submit', 'class' => 'btn-primary'], ['Login'])
+    _button(['type' => 'submit', 'class' => 'btn-primary'], 'Login')
 ]);
 ```
 
@@ -216,19 +227,19 @@ _form(['action' => '/login', 'method' => 'post'], [
 
 ```php
 // Static table
-_table('class="data-table"', [
+_table(['class' => 'data-table'], [
     _thead([
         _tr([
-            _th(['Name']),
-            _th(['Age']),
-            _th(['Email'])
+            _th('Name'),
+            _th('Age'),
+            _th('Email')
         ])
     ]),
     _tbody([
         _tr([
-            _td(['John']),
-            _td(['30']),
-            _td(['john@example.com'])
+            _td('John'),
+            _td('30'),
+            _td('john@example.com')
         ])
     ])
 ]);
@@ -267,15 +278,15 @@ _footer(['class' => 'site-footer'], [...]);
 
 ```php
 // Via array (at creation)
-$div = _div(['id' => 'main', 'class' => 'container'], ['Content']);
+$div = _div(['id' => 'main', 'class' => 'container'], 'Content');
 
 // Via setAttribute()
-$div = _div(['Content']);
+$div = _div('Content');
 $div->setAttribute('id', 'main');
 $div->setAttribute('class', 'container');
 
 // Via magic methods (underscores become hyphens)
-$div = _div(['Content']);
+$div = _div('Content');
 $div->id('main');
 $div->data_role('primary');  // Sets data-role="primary"
 $div->aria_label('Content'); // Sets aria-label="Content"
@@ -292,7 +303,7 @@ _input(['type' => 'checkbox', 'checked' => false]);
 // Output: <input type="checkbox">
 
 // Disabled button
-_button(['disabled' => true], ['Save']);
+_button(['disabled' => true], 'Save');
 // Output: <button disabled>Save</button>
 
 // Using magic methods (defaults to true)
@@ -326,21 +337,24 @@ $div->classes([
 _div()->classes('btn', ['active' => $isActive], 'shadow');
 ```
 
-### Shorthand Attributes
+### Multiple Attributes
 
-The special `_` key or string first argument allows raw attribute strings:
+All attributes must be passed as associative arrays:
 
 ```php
-// Using _ key
+// Multiple attributes
 _div([
     'class' => 'box',
-    '_' => 'data-custom="value" data-count="5"'
+    'data-custom' => 'value',
+    'data-count' => '5'
 ]);
 // Output: <div class="box" data-custom="value" data-count="5"></div>
 
-// Using string as first argument (recommended)
-_div('data-custom="value" data-count="5"');
-// Output: <div data-custom="value" data-count="5"></div>
+// Or using magic methods
+_div(['class' => 'box'])
+    ->data_custom('value')
+    ->data_count('5');
+// Output: <div class="box" data-custom="value" data-count="5"></div>
 ```
 
 ### Dynamic Attributes with Closures
@@ -368,14 +382,14 @@ The `map()` method transforms arrays into HTML nodes:
 $fruits = ['Apple', 'Banana', 'Cherry'];
 
 // Simple list
-$list = _ul('class="fruit-list"')->map($fruits, fn($fruit) => 
-    _li([$fruit])
+$list = _ul(['class' => 'fruit-list'])->map($fruits, fn($fruit) => 
+    _li($fruit)
 );
 
 // With index
 $list = _ol()->map($fruits, fn($fruit, $index) => 
     _li()(
-        _strong([($index + 1) . '. ']),
+        _strong(($index + 1) . '. '),
         $fruit
     )
 );
@@ -393,19 +407,19 @@ $users = [
     ['name' => 'Jane', 'email' => 'jane@example.com', 'role' => 'User'],
 ];
 
-$table = _table('class="users-table"', [
+$table = _table(['class' => 'users-table'], [
     _thead([
         _tr([
-            _th(['Name']),
-            _th(['Email']),
-            _th(['Role'])
+            _th('Name'),
+            _th('Email'),
+            _th('Role')
         ])
     ]),
     _tbody()->map($users, fn($user) => 
         _tr([
-            _td([$user['name']]),
-            _td([$user['email']]),
-            _td([_span("class=\"badge badge-{$user['role']}\"", [$user['role']])])
+            _td($user['name']),
+            _td($user['email']),
+            _td(_span(['class' => "badge badge-{$user['role']}"], $user['role']))
         ])
     )
 ]);
@@ -417,8 +431,8 @@ $table = _table('class="users-table"', [
 $data = ['name' => 'John', 'age' => 30, 'city' => 'NYC'];
 
 $dl = _dl()->map($data, fn($value, $key) => [
-    _dt([ucfirst($key) . ':']),
-    _dd([$value])
+    _dt(ucfirst($key) . ':'),
+    _dd($value)
 ]);
 // Output: <dl><dt>Name:</dt><dd>John</dd><dt>Age:</dt><dd>30</dd>...</dl>
 ```
@@ -485,21 +499,21 @@ _if(fn() => $user->isLoggedIn())
 ### Nested Conditionals
 
 ```php
-$userMenu = _div('class="user-menu"')(
+$userMenu = _div(['class' => 'user-menu'])(
     _if($user->isLoggedIn())
-        (_div('class="user-info"', [
+        (_div(['class' => 'user-info'], [
             _img(['src' => $user->avatar, 'alt' => $user->name, 'class' => 'avatar']),
-            _span('class="username"', [$user->name]),
+            _span(['class' => 'username'], $user->name),
             _if($user->isAdmin())
-                (_a(['href' => '/admin', 'class' => 'admin-link'], ['Admin Panel']))
+                (_a(['href' => '/admin', 'class' => 'admin-link'], 'Admin Panel'))
             ->else()
                 (null),
-            _a(['href' => '/logout'], ['Logout'])
+            _a(['href' => '/logout'], 'Logout')
         ]))
     ->else()
-        (_div('class="auth-links"', [
-            _a(['href' => '/login', 'class' => 'btn'], ['Login']),
-            _a(['href' => '/register', 'class' => 'btn-primary'], ['Register'])
+        (_div(['class' => 'auth-links'], [
+            _a(['href' => '/login', 'class' => 'btn'], 'Login'),
+            _a(['href' => '/register', 'class' => 'btn-primary'], 'Register')
         ]))
 );
 ```
@@ -527,13 +541,13 @@ echo btn('Delete', 'danger', ['onclick' => 'confirmDelete()']);
 
 ```php
 function card(string $title, $content, $footer = null) {
-    return _div('class="card"', [
-        _div('class="card-header"', [
-            _h3('class="card-title"', [$title])
+    return _div(['class' => 'card'], [
+        _div(['class' => 'card-header'], [
+            _h3(['class' => 'card-title'], $title)
         ]),
-        _div('class="card-body"', [$content]),
+        _div(['class' => 'card-body'], $content),
         _if($footer !== null)
-            (_div('class="card-footer"', [$footer]))
+            (_div(['class' => 'card-footer'], $footer))
         ->else()
             (null)
     ]);
@@ -542,7 +556,7 @@ function card(string $title, $content, $footer = null) {
 // Usage
 echo card(
     'Welcome',
-    _p(['This is a card component.']),
+    _p('This is a card component.'),
     btn('Learn More', 'secondary')
 );
 ```
@@ -551,7 +565,7 @@ echo card(
 
 ```php
 function badge(string $text, string $variant = 'primary') {
-    return _span("class=\"badge badge-{$variant}\"", [$text]);
+    return _span(['class' => "badge badge-{$variant}"], $text);
 }
 
 // Usage
@@ -563,12 +577,12 @@ echo badge('Hot', 'danger');
 
 ```php
 function alert(string $message, string $type = 'info', bool $dismissible = false) {
-    return _div("class=\"alert alert-{$type}\"", [
+    return _div(['class' => "alert alert-{$type}"], [
         $dismissible ? _button([
             'type' => 'button',
             'class' => 'close',
             'data-dismiss' => 'alert'
-        ], ['×']) : null,
+        ], '×') : null,
         $message
     ]);
 }
@@ -582,8 +596,8 @@ echo alert('Please fill all fields.', 'warning');
 
 ```php
 function formField(string $label, string $name, string $type = 'text', array $attrs = []) {
-    return _div('class="form-group"', [
-        _label(['for' => $name], [$label]),
+    return _div(['class' => 'form-group'], [
+        _label(['for' => $name], $label),
         _input(array_merge([
             'type' => $type,
             'id' => $name,
@@ -620,9 +634,9 @@ function icon(string $name, int $size = 24) {
 }
 
 // Usage
-echo _button('class="btn-icon"', [
+echo _button(['class' => 'btn-icon'], [
     icon('close', 20),
-    _span(['Close'])
+    _span('Close')
 ]);
 ```
 
@@ -636,35 +650,35 @@ use function IceTea\IceDOM\{
     _header, _nav, _a, _ul, _li, _main, _h1, _p, _footer, _script
 };
 
-$page = _html('lang="en"', [
+$page = _html(['lang' => 'en'], [
     _head([
         _meta(['charset' => 'UTF-8']),
         _meta(['name' => 'viewport', 'content' => 'width=device-width, initial-scale=1.0']),
-        _title(['My Website - Home']),
+        _title('My Website - Home'),
         _link(['rel' => 'stylesheet', 'href' => '/css/style.css'])
     ]),
     
     _body([
-        _header('class="site-header"', [
-            _nav('class="navbar container"', [
-                _a('href="/" class="logo"', ['MySite']),
-                _ul('class="nav-menu"', [
-                    _li([_a(['href' => '/'], ['Home'])]),
-                    _li([_a(['href' => '/about'], ['About'])]),
-                    _li([_a(['href' => '/services'], ['Services'])]),
-                    _li([_a(['href' => '/contact'], ['Contact'])])
+        _header(['class' => 'site-header'], [
+            _nav(['class' => 'navbar container'], [
+                _a(['href' => '/', 'class' => 'logo'], 'MySite'),
+                _ul(['class' => 'nav-menu'], [
+                    _li(_a(['href' => '/'], 'Home')),
+                    _li(_a(['href' => '/about'], 'About')),
+                    _li(_a(['href' => '/services'], 'Services')),
+                    _li(_a(['href' => '/contact'], 'Contact'))
                 ])
             ])
         ]),
         
-        _main('class="content container"', [
-            _h1(['Welcome to My Website']),
-            _p(['This is a complete HTML page built with IceDOM.']),
-            _p(['All content is type-safe and automatically escaped.'])
+        _main(['class' => 'content container'], [
+            _h1('Welcome to My Website'),
+            _p('This is a complete HTML page built with IceDOM.'),
+            _p('All content is type-safe and automatically escaped.')
         ]),
         
-        _footer('class="site-footer"', [
-            _p(['© 2024 MySite. All rights reserved.'])
+        _footer(['class' => 'site-footer'], [
+            _p('© 2024 MySite. All rights reserved.')
         ]),
         
         _script(['src' => '/js/app.js'])
@@ -683,13 +697,13 @@ $products = [
     ['name' => 'Keyboard', 'price' => 79, 'image' => 'keyboard.jpg', 'featured' => true],
 ];
 
-$grid = _div('class="product-grid"')->map($products, function($product) {
+$grid = _div(['class' => 'product-grid'])->map($products, function($product) {
     return _div([
         'class' => 'product-card',
         'data-product-id' => $product['name']
     ], [
         _if($product['featured'])
-            (_span('class="badge-featured"', ['Featured']))
+            (_span(['class' => 'badge-featured'], 'Featured'))
         ->else()
             (null),
             
@@ -699,9 +713,9 @@ $grid = _div('class="product-grid"')->map($products, function($product) {
             'class' => 'product-image'
         ]),
         
-        _div('class="product-info"', [
-            _h3('class="product-name"', [$product['name']]),
-            _p('class="product-price"', ['$' . number_format($product['price'], 2)]),
+        _div(['class' => 'product-info'], [
+            _h3(['class' => 'product-name'], $product['name']),
+            _p(['class' => 'product-price'], '$' . number_format($product['price'], 2)),
             btn('Add to Cart', 'primary', ['data-product' => $product['name']])
         ])
     ]);
@@ -719,13 +733,13 @@ $errors = [
 ];
 
 $form = _form(['action' => '/register', 'method' => 'post', 'class' => 'registration-form'], [
-    _h2(['Create Account']),
+    _h2('Create Account'),
     
     // Email field
     _div([
         'class' => 'form-group' . (isset($errors['email']) ? ' has-error' : '')
     ], [
-        _label(['for' => 'email'], ['Email Address']),
+        _label(['for' => 'email'], 'Email Address'),
         _input([
             'type' => 'email',
             'id' => 'email',
@@ -734,14 +748,14 @@ $form = _form(['action' => '/register', 'method' => 'post', 'class' => 'registra
             'required' => true
         ]),
         _if(isset($errors['email']))
-            (_span('class="error-message"', [$errors['email']]))
+            (_span(['class' => 'error-message'], $errors['email']))
         ->else()
             (null)
     ]),
     
     // Password field
-    _div('class="form-group"', [
-        _label(['for' => 'password'], ['Password']),
+    _div(['class' => 'form-group'], [
+        _label(['for' => 'password'], 'Password'),
         _input([
             'type' => 'password',
             'id' => 'password',
@@ -750,12 +764,12 @@ $form = _form(['action' => '/register', 'method' => 'post', 'class' => 'registra
             'minlength' => 8,
             'required' => true
         ]),
-        _small('class="form-text"', ['Must be at least 8 characters'])
+        _small(['class' => 'form-text'], 'Must be at least 8 characters')
     ]),
     
     // Confirm password
-    _div('class="form-group"', [
-        _label(['for' => 'password_confirm'], ['Confirm Password']),
+    _div(['class' => 'form-group'], [
+        _label(['for' => 'password_confirm'], 'Confirm Password'),
         _input([
             'type' => 'password',
             'id' => 'password_confirm',
@@ -766,7 +780,7 @@ $form = _form(['action' => '/register', 'method' => 'post', 'class' => 'registra
     ]),
     
     // Terms checkbox
-    _div('class="form-check"', [
+    _div(['class' => 'form-check'], [
         _input([
             'type' => 'checkbox',
             'id' => 'terms',
@@ -774,16 +788,16 @@ $form = _form(['action' => '/register', 'method' => 'post', 'class' => 'registra
             'class' => 'form-check-input',
             'required' => true
         ]),
-        _label('class="form-check-label" for="terms"', [
+        _label(['class' => 'form-check-label', 'for' => 'terms'], [
             'I agree to the ',
-            _a(['href' => '/terms'], ['Terms of Service'])
+            _a(['href' => '/terms'], 'Terms of Service')
         ])
     ]),
     
-    _div('class="form-actions"', [
+    _div(['class' => 'form-actions'], [
         btn('Create Account', 'primary', ['type' => 'submit']),
         ' ',
-        _a(['href' => '/login', 'class' => 'btn-link'], ['Already have an account?'])
+        _a(['href' => '/login', 'class' => 'btn-link'], 'Already have an account?')
     ])
 ]);
 
@@ -799,16 +813,16 @@ $users = [
     ['id' => 3, 'name' => 'Bob Wilson', 'email' => 'bob@example.com', 'role' => 'User', 'active' => false],
 ];
 
-$table = _div('class="table-responsive"', [
-    _table('class="table table-striped"', [
+$table = _div(['class' => 'table-responsive'], [
+    _table(['class' => 'table table-striped'], [
         _thead([
             _tr([
-                _th(['ID']),
-                _th(['Name']),
-                _th(['Email']),
-                _th(['Role']),
-                _th(['Status']),
-                _th(['Actions'])
+                _th('ID'),
+                _th('Name'),
+                _th('Email'),
+                _th('Role'),
+                _th('Status'),
+                _th('Actions')
             ])
         ]),
         _tbody()->map($users, function($user) {
@@ -816,22 +830,22 @@ $table = _div('class="table-responsive"', [
             $statusClass = $user['active'] ? 'success' : 'secondary';
             
             return _tr([
-                _td([$user['id']]),
-                _td([$user['name']]),
-                _td([$user['email']]),
-                _td([badge($user['role'], $roleClass)]),
-                _td([badge($user['active'] ? 'Active' : 'Inactive', $statusClass)]),
-                _td('class="actions"', [
+                _td($user['id']),
+                _td($user['name']),
+                _td($user['email']),
+                _td(badge($user['role'], $roleClass)),
+                _td(badge($user['active'] ? 'Active' : 'Inactive', $statusClass)),
+                _td(['class' => 'actions'], [
                     _a([
                         'href' => "/users/{$user['id']}/edit",
                         'class' => 'btn-sm btn-outline'
-                    ], ['Edit']),
+                    ], 'Edit'),
                     ' ',
                     _button([
                         'type' => 'button',
                         'class' => 'btn-sm btn-danger',
                         'onclick' => "deleteUser({$user['id']})"
-                    ], ['Delete'])
+                    ], 'Delete')
                 ])
             ]);
         })
@@ -845,24 +859,24 @@ echo $table;
 
 ```php
 function statCard(string $title, $value, string $icon, string $trend = null) {
-    return _div('class="stat-card"', [
-        _div('class="stat-header"', [
+    return _div(['class' => 'stat-card'], [
+        _div(['class' => 'stat-header'], [
             icon($icon, 32),
-            _span('class="stat-title"', [$title])
+            _span(['class' => 'stat-title'], $title)
         ]),
-        _div('class="stat-value"', [$value]),
-        $trend ? _div("class=\"stat-trend {$trend}\"", [
+        _div(['class' => 'stat-value'], $value),
+        $trend ? _div(['class' => "stat-trend {$trend}"], [
             $trend === 'up' ? '↑' : '↓',
             ' 12% from last month'
         ]) : null
     ]);
 }
 
-$dashboard = _div('class="dashboard"', [
-    _h1(['Dashboard']),
+$dashboard = _div(['class' => 'dashboard'], [
+    _h1('Dashboard'),
     
     // Stats grid
-    _div('class="stats-grid"', [
+    _div(['class' => 'stats-grid'], [
         statCard('Total Users', '1,234', 'users', 'up'),
         statCard('Revenue', '$45,678', 'dollar', 'up'),
         statCard('Orders', '892', 'cart', 'down'),
@@ -870,15 +884,15 @@ $dashboard = _div('class="dashboard"', [
     ]),
     
     // Recent activity
-    _div('class="recent-activity"', [
-        _h2(['Recent Activity']),
-        _ul('class="activity-list"')->map([
+    _div(['class' => 'recent-activity'], [
+        _h2('Recent Activity'),
+        _ul(['class' => 'activity-list'])->map([
             'John Doe registered',
             'New order #1234 placed',
             'Product "Laptop" updated',
             'Jane Smith logged in'
         ], fn($activity) => 
-            _li('class="activity-item"', [$activity])
+            _li(['class' => 'activity-item'], $activity)
         )
     ])
 ]);
@@ -894,7 +908,7 @@ echo $dashboard;
 Marks HTML as safe (won't be escaped).
 
 ```php
-_div([_safe('<strong>Bold</strong>')]);
+_div(_safe('<strong>Bold</strong>'));
 // Output: <div><strong>Bold</strong></div>
 ```
 
@@ -976,7 +990,7 @@ Represents an HTML element.
 Complete HTML document with DOCTYPE.
 
 ```php
-echo _html('lang="en"', [_head(...), _body(...)]);
+echo _html(['lang' => 'en'], [_head(...), _body(...)]);
 // Output: <!DOCTYPE html>\n<html lang="en">...</html>
 ```
 
@@ -1028,10 +1042,10 @@ new ArrayMap($items, fn($item) => _li([$item]))
 
 ```php
 // Good - automatic escaping
-_div([$userInput]);
+_div($userInput);
 
 // Good - for trusted HTML only
-_div([_safe($sanitizedHtml)]);
+_div(_safe($sanitizedHtml));
 ```
 
 ### ❌ DON'T: Use _raw() with User Input
@@ -1041,22 +1055,22 @@ _div([_safe($sanitizedHtml)]);
 _raw($_POST['content']);
 
 // Safe alternative
-_div([$_POST['content']]);
+_div($_POST['content']);
 ```
 
-### ✅ DO: Use Invoke Syntax for Readability
+### ✅ DO: Use Attributes as Arrays
 
 ```php
-// Recommended - clean and HTML-like
-_div('class="card"', [
-    _h3(['Title']),
-    _p(['Content'])
+// Recommended - clear and explicit
+_div(['class' => 'card'], [
+    _h3('Title'),
+    _p('Content')
 ]);
 
-// Also works but more verbose
-_div(['class' => 'card'], [
-    _h3(['Title']),
-    _p(['Content'])
+// With multiple attributes
+_div(['class' => 'card', 'data-id' => '123'], [
+    _h3('Title'),
+    _p('Content')
 ]);
 ```
 
@@ -1064,23 +1078,23 @@ _div(['class' => 'card'], [
 
 ```php
 // Recommended
-_ul('class="menu"')->map($items, fn($item) => 
-    _li([$item])
+_ul(['class' => 'menu'])->map($items, fn($item) => 
+    _li($item)
 );
 
 // Avoid manual loops
 $items = [];
 foreach ($data as $item) {
-    $items[] = _li([$item]);
+    $items[] = _li($item);
 }
-_ul('class="menu"', $items);
+_ul(['class' => 'menu'], $items);
 ```
 
 ### ✅ DO: Extract Reusable Components
 
 ```php
 function alertBox(string $message, string $type = 'info') {
-    return _div("class=\"alert alert-{$type}\"", [$message]);
+    return _div(['class' => "alert alert-{$type}"], $message);
 }
 
 echo alertBox('Success!', 'success');
@@ -1092,9 +1106,9 @@ echo alertBox('Success!', 'success');
 use IceTea\IceDOM\HtmlNode;
 
 function createCard(string $title, string $content): HtmlNode {
-    return _div('class="card"', [
-        _h3([$title]),
-        _p([$content])
+    return _div(['class' => 'card'], [
+        _h3($title),
+        _p($content)
     ]);
 }
 ```
@@ -1126,17 +1140,17 @@ _if($showButton)
 
 ```php
 // Faster - array is initialized once
-_ul('class="menu"', [
-    _li(['Item 1']),
-    _li(['Item 2']),
-    _li(['Item 3'])
+_ul(['class' => 'menu'], [
+    _li('Item 1'),
+    _li('Item 2'),
+    _li('Item 3')
 ]);
 
 // Slower - multiple method calls
-_ul('class="menu"')(
-    _li(['Item 1']),
-    _li(['Item 2']),
-    _li(['Item 3'])
+_ul(['class' => 'menu'])(
+    _li('Item 1'),
+    _li('Item 2'),
+    _li('Item 3')
 );
 ```
 
@@ -1144,12 +1158,12 @@ _ul('class="menu"')(
 
 ```php
 // Recommended - more readable
-_ul('class="menu"')
+_ul(['class' => 'menu'])
     ->id('main-menu')
     ->data_role('navigation')
     ->(
-        _li(['Item 1']),
-        _li(['Item 2'])
+        _li('Item 1'),
+        _li('Item 2')
     );
 ```
 
@@ -1160,7 +1174,7 @@ _ul('class="menu"')
 _div(null, ['child1', 'child2'])('child3');
 _tr(null, [_td(['data'])]);
 
-// RECOMMENDED - use empty args then invoke or magic call
+// RECOMMENDED - use empty args then invoke
 _div()('child1', 'child2', 'child3');
 _tr()(_td(['data']));
 
@@ -1168,29 +1182,26 @@ _tr()(_td(['data']));
 _div(['child1', 'child2', 'child3']);
 _tr([_td(['data'])]);
 
-// RECOMMENDED - or string for attributes then children array
-_div('class="box"', ['child1', 'child2', 'child3']);
-_tr('class="highlight"', [_td(['data'])]);
+// RECOMMENDED - or use attributes then children
+_div(['class' => 'box'], ['child1', 'child2', 'child3']);
+_tr(['class' => 'highlight'], [_td(['data'])]);
 ```
 
-### ❌ DON'T: Use Mixed Key Array for Attributes
+### ✅ DO: Use Associative Arrays for Attributes
 
 ```php
-// NOT RECOMMENDED - mixed key array (numbered + associative)
-_div(['class="container" data-show="1"', 'align' => 'left']);
-
-// RECOMMENDED - use string for raw attributes
-_div('class="container" data-show="1"')
-    ->setAttribute('align', 'left');
+// RECOMMENDED - clear and type-safe
+_div(['class' => 'container', 'data-show' => '1', 'align' => 'left']);
 
 // RECOMMENDED - or use setAttribute/magic methods
-_div()
-    ->setAttribute('class', 'container')
+_div(['class' => 'container'])
     ->setAttribute('data-show', '1')
     ->setAttribute('align', 'left');
 
-// RECOMMENDED - or use associative array only
-_div(['class' => 'container', 'data-show' => '1', 'align' => 'left']);
+// RECOMMENDED - or use magic methods with underscore conversion
+_div(['class' => 'container'])
+    ->data_show('1')
+    ->align('left');
 ```
 
 ---
