@@ -3,9 +3,9 @@
 
 // Common Tags
 
-require_once __DIR__.'/../src/Node.php';
-require_once __DIR__.'/../src/HtmlAttributeMethods.php';
-require_once __DIR__.'/../src/HtmlNode.php';
+require_once __DIR__ . '/../src/Node.php';
+require_once __DIR__ . '/../src/HtmlAttributeMethods.php';
+require_once __DIR__ . '/../src/HtmlNode.php';
 
 use IceTea\IceDOM\HtmlNode;
 
@@ -240,9 +240,9 @@ EOT;
 
 echo $head;
 foreach ($htmlTags as $tag) {
-    [$tagName, $nodeType] = explode(':', $tag.':'.$defaultNodeClass);
+    [$tagName, $nodeType] = explode(':', $tag . ':' . $defaultNodeClass);
     echo "\n";
     echo sprintf(<<<'EOT'
-    function _%s(null | string | array | Closure | Node | Stringable $arg = null, ?array $children = null) : %s { return %s::tag('%s', $arg, $children, %s); }
+    function _%s() : %s { return %s::tag('%s', func_get_args(), %s); }
     EOT, $tagName, $nodeType, $nodeType, $tagName, in_array($tagName, HtmlNode::VOID_TAGS) ? 'true' : 'false');
 }

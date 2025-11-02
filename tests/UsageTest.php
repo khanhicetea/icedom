@@ -60,10 +60,10 @@ describe('Invoke Syntax', function () {
     });
 
     test('array initialization for children', function () {
-        $result = _ul('class="menu"', [
+        $result = _ul(['class' => 'menu'])(
             _li(['Item 1']),
             _li(['Item 2']),
-        ]);
+        );
         expect((string) $result)->toBe('<ul class="menu"><li>Item 1</li><li>Item 2</li></ul>');
     });
 
@@ -284,7 +284,7 @@ describe('Working with Attributes', function () {
     test('dynamic attributes with closures', function () {
         $result = _div([
             'class' => 'box',
-            'data-count' => fn ($node) => count($node->getChildren()),
+            'data-count' => fn($node) => count($node->getChildren()),
         ], [
             'Child 1',
             'Child 2',
@@ -300,7 +300,9 @@ describe('Dynamic Content', function () {
     test('map with simple list', function () {
         $fruits = ['Apple', 'Banana', 'Cherry'];
 
-        $list = _ul('class="fruit-list"', array_map(fn ($fruit) => _li([$fruit]), $fruits
+        $list = _ul('class="fruit-list"', array_map(
+            fn($fruit) => _li([$fruit]),
+            $fruits
         ));
 
         $output = (string) $list;
@@ -315,7 +317,7 @@ describe('Dynamic Content', function () {
 
         $items = [];
         foreach ($fruits as $index => $fruit) {
-            $items[] = _li([_strong([($index + 1).'. ']), $fruit]);
+            $items[] = _li([_strong([($index + 1) . '. ']), $fruit]);
         }
         $list = _ol($items);
 
@@ -344,11 +346,13 @@ describe('Dynamic Content', function () {
                     _th(['Role']),
                 ]),
             ]),
-            _tbody(array_map(fn ($user) => _tr([
-                _td([$user['name']]),
-                _td([$user['email']]),
-                _td([_span("class=\"badge badge-{$user['role']}\"", [$user['role']])]),
-            ]), $users
+            _tbody(array_map(
+                fn($user) => _tr([
+                    _td([$user['name']]),
+                    _td([$user['email']]),
+                    _td([_span("class=\"badge badge-{$user['role']}\"", [$user['role']])]),
+                ]),
+                $users
             )),
         ]);
 
@@ -364,7 +368,7 @@ describe('Dynamic Content', function () {
 
         $items = [];
         foreach ($data as $key => $value) {
-            $items[] = _dt([ucfirst($key).':']);
+            $items[] = _dt([ucfirst($key) . ':']);
             $items[] = _dd([$value]);
         }
         $dl = _dl($items);
@@ -380,7 +384,7 @@ describe('Dynamic Content', function () {
         $result = _div(['class' => 'card'], [
             'Item 1',
             'Item 2',
-            fn ($node) => 'Total items: '.(count($node->getChildren()) - 1),
+            fn($node) => 'Total items: ' . (count($node->getChildren()) - 1),
         ]);
 
         $output = (string) $result;
@@ -433,7 +437,7 @@ describe('Conditional Rendering', function () {
         $isLoggedIn = true;
         $userName = 'Alice';
 
-        $result = _if(fn () => $isLoggedIn)(fn () => "Welcome, {$userName}")
+        $result = _if(fn() => $isLoggedIn)(fn() => "Welcome, {$userName}")
             ->else('Please login');
 
         expect((string) $result)->toBe('Welcome, Alice');
@@ -575,7 +579,7 @@ describe('Helper Functions', function () {
     });
 
     test('_slot with function', function () {
-        $slot = _slot(fn () => 'Dynamic content');
+        $slot = _slot(fn() => 'Dynamic content');
         expect((string) $slot)->toBe('Dynamic content');
     });
 
@@ -649,7 +653,7 @@ describe('Complete Examples', function () {
 
                 _div('class="product-info"', [
                     _h3('class="product-name"', [$product['name']]),
-                    _p('class="product-price"', ['$'.number_format($product['price'], 2)]),
+                    _p('class="product-price"', ['$' . number_format($product['price'], 2)]),
                 ]),
             ]);
         }, $products));
@@ -668,7 +672,7 @@ describe('Complete Examples', function () {
             ['id' => 2, 'name' => 'Jane Smith', 'email' => 'jane@example.com', 'role' => 'User', 'active' => false],
         ];
 
-        $badge = fn ($text, $variant) => _span("class=\"badge badge-{$variant}\"", [$text]);
+        $badge = fn($text, $variant) => _span("class=\"badge badge-{$variant}\"", [$text]);
 
         $table = _div('class="table-responsive"', [
             _table('class="table table-striped"', [
@@ -715,7 +719,7 @@ describe('Complete Examples', function () {
 
             // Email field
             _div([
-                'class' => 'form-group'.(isset($errors['email']) ? ' has-error' : ''),
+                'class' => 'form-group' . (isset($errors['email']) ? ' has-error' : ''),
             ], [
                 _label(['for' => 'email'], ['Email Address']),
                 _input([

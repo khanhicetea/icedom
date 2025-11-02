@@ -2,6 +2,9 @@
 composer.lock
 /vendor
 
+# MacOS
+.DS_Store
+
 # Frontend Assets
 /node_modules
 

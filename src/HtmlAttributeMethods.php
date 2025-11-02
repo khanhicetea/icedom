@@ -46,6 +46,9 @@ namespace IceTea\IceDOM;
  */
 trait HtmlAttributeMethods
 {
+    // Custom attributes
+    public function ref($value) : static { $this->attrs['ref'] = $value; return $this; }
+    
     // GENERATED
 	public function accept($value) : static { $this->attrs['accept'] = $value; return $this; }
 	public function acceptCharset($value) : static { $this->attrs['accept-charset'] = $value; return $this; }

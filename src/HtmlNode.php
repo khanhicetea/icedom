@@ -34,19 +34,7 @@ use function str_replace;
  * Attribute Types:
  * 1. Boolean attributes: Presence-based (disabled, checked, selected, etc.)
  * 2. Value attributes: Key="value" format (id, class, href, etc.)
- * 3. Special '_' attribute: Raw unquoted content in opening tag
- * 4. Closure attributes: Evaluated dynamically during rendering
- *
- * Example:
- * ```php
- * $div = new HtmlNode(['Hello'], 'div', ['id' => 'main', 'class' => 'container']);
- * $div->setAttribute('data-value', 123);
- * echo $div; // <div id="main" class="container" data-value="123">Hello</div>
- *
- * $input = new HtmlNode([], 'input', ['type' => 'checkbox'], true);
- * $input->checked(true);
- * echo $input; // <input type="checkbox" checked>
- * ```
+ * 3. Closure attributes: Evaluated dynamically during rendering
  *
  * @author IceTea Team
  *
@@ -88,7 +76,6 @@ class HtmlNode extends Node
      * Associative array of HTML attributes for this element.
      *
      * Special keys:
-     * - '_': Raw content in opening tag (unquoted)
      * - Other keys: Rendered as key="value" or key (for boolean attrs)
      *
      * @var array<string, mixed> Attribute name => value pairs
@@ -116,7 +103,6 @@ class HtmlNode extends Node
      * @param  array<string, mixed>  $attrs  Initial HTML attributes.
      *                                       - Standard attributes: ['id' => 'main', 'class' => 'btn']
      *                                       - Boolean attributes: ['disabled' => true]
-     *                                       - '_' key: Raw content in opening tag
      *                                       - Closure values: Evaluated during rendering
      * @param  bool  $isVoid  Whether this is a void/self-closing element.
      *                        - true: No closing tag, appendChild throws exception
@@ -140,81 +126,27 @@ class HtmlNode extends Node
         $this->isVoid = $isVoid;
     }
 
-    /**
-     * Factory method to create HTML elements with flexible argument patterns.
-     *
-     * Provides multiple ways to construct HTML elements based on the first argument type,
-     * enabling concise syntax for common patterns. This is the recommended way to create
-     * HTML elements when using the library's helper functions.
-     *
-     * Argument handling by type:
-     * 1. String $firstArgument: Treated as '_' attribute (inner text), $children used for child nodes
-     * 2. Associative array: Treated as attributes, $children used for child nodes
-     * 3. List array: Treated as children (ignore $children parameter)
-     * 4. null + array $children: Use $children as children
-     * 5. Other types: Wrap $firstArgument as single child
-     *
-     * Examples:
-     * ```php
-     * // String as text content
-     * HtmlNode::tag('div', 'Hello', []) // <div _="Hello"></div>
-     *
-     * // Attributes + children
-     * HtmlNode::tag('div', ['class' => 'btn'], [$child]) // <div class="btn">$child</div>
-     *
-     * // List as children
-     * HtmlNode::tag('ul', [$li1, $li2], null) // <ul>$li1$li2</ul>
-     *
-     * // Null + children
-     * HtmlNode::tag('div', null, [$child]) // <div>$child</div>
-     * ```
-     *
-     * @param  string  $tagName  The HTML tag name (div, span, etc.)
-     * @param  mixed  $firstArgument  Flexible first parameter:
-     *                                - string: Used as '_' attribute (text content)
-     *                                - array: Attributes (associative) or children (list)
-     *                                - null: Ignore, use $children parameter
-     *                                - Other: Single child to wrap
-     * @param  array<Node|Closure|string|int|float|SafeStringable|Stringable|ArrayMap|null>|null  $children  Child nodes when $firstArgument is string/attributes/null.
-     *                                                                                                       - null: No children
-     *                                                                                                       - array: Child nodes
-     * @param  bool  $isVoid  Whether this is a void/self-closing element
-     * @return static New HtmlNode instance with configured tag, attributes, and children
-     */
-    public static function tag(string $tagName, mixed $firstArgument, ?array $children, bool $isVoid = false): static
+    public static function tag(string $tagName, array $args = [], bool $isVoid = false): static
     {
-        if (is_string($firstArgument)) {
-            return new static(
-                is_array($children) ? $children : [],
-                $tagName,
-                ['_' => $firstArgument],
-                $isVoid
-            );
+        if (count($args) == 1 && is_array($args[0]) && array_is_list($args[0])) {
+            return new static($args[0], $tagName, [], $isVoid);
         }
 
-        if (is_array($firstArgument)) {
-            if (array_is_list($firstArgument)) {
-                return new static($firstArgument, $tagName, [], $isVoid);
+        $node = new static([], $tagName, [], $isVoid);
+
+        foreach ($args as $arg) {
+            if (is_array($arg)) {
+                if (array_is_list($arg)) {
+                    $node->appendChildren($arg);
+                } else {
+                    $node->mergeAttributes($arg);
+                }
+            } else {
+                $node->appendChild($arg);
             }
-
-            if (isset($firstArgument[0]) && ! isset($firstArgument['_'])) {
-                $firstArgument['_'] = $firstArgument[0];
-                unset($firstArgument[0]);
-            }
-
-            return new static(
-                is_array($children) ? $children : [],
-                $tagName,
-                $firstArgument,
-                $isVoid
-            );
         }
 
-        if ($firstArgument === null && is_array($children)) {
-            return new static($children, $tagName, [], $isVoid);
-        }
-
-        return new static([$firstArgument], $tagName, [], $isVoid);
+        return $node;
     }
 
     /**
@@ -247,12 +179,11 @@ class HtmlNode extends Node
      * the attributes portion of the opening tag.
      *
      * Attribute processing rules:
-     * 1. '_' key: Output as raw unquoted content (e.g., attr="_value" => " _value")
-     * 2. Closure values: Evaluated with this node as parameter first
-     * 3. Boolean attrs with false: Skipped (not rendered)
-     * 4. Boolean attrs with true/truthy: Rendered as just attribute name
-     * 5. Other values: Rendered as key="escapedValue"
-     * 6. null values: Skipped (not rendered)
+     * 1. Closure values: Evaluated with this node as parameter first
+     * 2. Boolean attrs with false: Skipped (not rendered)
+     * 3. Boolean attrs with true/truthy: Rendered as just attribute name
+     * 4. Other values: Rendered as key="escapedValue"
+     * 5. null values: Skipped (not rendered)
      *
      * Escaping:
      * - Both keys and values are escaped using htmlspecialchars()
@@ -274,12 +205,6 @@ class HtmlNode extends Node
 
         $attrStrs = [];
         foreach ($this->attrs as $key => $value) {
-            if ($key == '_') {
-                $attrStrs[] = " {$value}";
-
-                continue;
-            }
-
             if ($value instanceof Closure) {
                 $value = $value($this);
             }
@@ -331,6 +256,25 @@ class HtmlNode extends Node
     public function getAttribute($key, $default = null)
     {
         return $this->attrs[$key] ?? $default;
+    }
+
+    /**
+     * Merge new HTML attribute values.
+     *
+     * @param  array  $attributes  An associative array of attribute names and values.
+     *                             - string/int/float: Rendered as key="value"
+     *                             - bool: For boolean attrs, true renders as just key, false skips
+     *                             - Closure: Evaluated during rendering
+     *                             - null: Attribute not rendered
+     * @return static Returns $this for method chaining
+     */
+    public function mergeAttributes(array $attributes): static
+    {
+        foreach ($attributes as $key => $value) {
+            $this->attrs[$key] = $value;
+        }
+
+        return $this;
     }
 
     /**

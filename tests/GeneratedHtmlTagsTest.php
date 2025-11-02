@@ -122,7 +122,7 @@ describe('Generated HTML Tag Functions', function () {
             });
 
             it('creates span with shorthand attributes and invoke', function () {
-                $span = _span('class="badge"')('New');
+                $span = _span(['class' => 'badge'])('New');
                 expect((string) $span)->toBe('<span class="badge">New</span>');
             });
         });
